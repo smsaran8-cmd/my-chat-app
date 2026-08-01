@@ -7,12 +7,12 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { maxHttpBufferSize: 1e7 });
 
-// 1. Root folder-la irundhu HTML static-a serve panna:
-app.use(express.static(__dirname));
+// Serve static files from 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
 
-// 2. Main page GET request-ukku index.html-a direct-ah anuppa:
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+// Home Route Fix - sending public/index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 let activeUsers = [];
