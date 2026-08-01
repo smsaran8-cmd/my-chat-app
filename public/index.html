@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Pro Chat App</title>
+    <title>My Ultimate Chat App</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { display: flex; height: 100vh; background: #f0f2f5; }
@@ -15,8 +15,8 @@
         .login-box button { width: 100%; padding: 12px; background: #0078ff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
 
         /* Sidebar */
-        #sidebar { width: 300px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-        .user-header { padding: 15px; background: #f7f7f7; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; display: flex; justify-content: space-between; align-items: center; }
+        #sidebar { width: 320px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+        .user-header { padding: 15px; background: #f7f7f7; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; }
         .section-title { padding: 10px 15px; background: #e9ecef; font-size: 12px; font-weight: bold; color: #6c757d; text-transform: uppercase; }
         .list-container { flex: 1; overflow-y: auto; }
         .user-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
@@ -33,11 +33,17 @@
         .msg.sent { background: #d9fdd3; align-self: flex-end; }
         .msg.received { background: white; align-self: flex-start; }
         .msg .sender { font-size: 11px; color: #888; margin-bottom: 3px; font-weight: bold; }
+        .msg img { max-width: 100%; border-radius: 8px; margin-top: 5px; }
+        .msg audio { max-width: 100%; margin-top: 5px; }
 
         /* Input Area */
-        .input-box { padding: 15px; background: white; display: flex; gap: 10px; border-top: 1px solid #ddd; }
-        .input-box input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
-        .input-box button { padding: 12px 20px; background: #0078ff; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .input-box { padding: 12px; background: white; display: flex; gap: 8px; border-top: 1px solid #ddd; align-items: center; }
+        .input-box input[type="text"] { flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        .input-btn { padding: 8px 12px; background: #0078ff; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+        .icon-btn { background: #f0f2f5; color: #333; border: 1px solid #ccc; font-size: 16px; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; }
+        .recording { background: #dc3545 !important; color: white !important; animation: pulse 1s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -53,14 +59,12 @@
 
     <!-- App Layout -->
     <div id="sidebar">
-        <div class="user-header">
-            <span id="my-name">User</span>
-        </div>
+        <div class="user-header">👤 <span id="my-name">User</span></div>
 
         <div class="section-title">Friend Requests</div>
-        <div id="requests-list" class="list-container" style="max-height: 120px;"></div>
+        <div id="requests-list" class="list-container" style="max-height: 100px;"></div>
 
-        <div class="section-title">Friends (Private Chat)</div>
+        <div class="section-title">Friends (Private)</div>
         <div id="friends-list" class="list-container"></div>
 
         <div class="section-title">All Online Users</div>
@@ -68,11 +72,16 @@
     </div>
 
     <div id="chat-area">
-        <div class="chat-header" id="chat-title">Select a Friend or Global Chat</div>
+        <div class="chat-header" id="chat-title">🌐 Global Chat Room</div>
         <div id="messages"></div>
         <div class="input-box">
+            <button class="icon-btn" onclick="document.getElementById('img-input').click()" title="Send Image">📷</button>
+            <input type="file" id="img-input" accept="image/*" style="display:none" onchange="sendImage(this)"/>
+
+            <button class="icon-btn" id="mic-btn" onclick="toggleRecord()" title="Voice Message">🎙️</button>
+
             <input type="text" id="msg-input" placeholder="Type a message..." onkeypress="handleKey(event)"/>
-            <button onclick="sendMsg()">Send</button>
+            <button class="input-btn" onclick="sendMsg()">Send</button>
         </div>
     </div>
 
@@ -80,7 +89,8 @@
     <script>
         const socket = io();
         let myUsername = "";
-        let currentChatTarget = "GLOBAL"; // Default Global Chat
+        let currentChatTarget = "GLOBAL";
+        let mediaRecorder, audioChunks = [], isRecording = false;
 
         function login() {
             const name = document.getElementById('username').value.trim();
@@ -92,52 +102,87 @@
             }
         }
 
-        function handleKey(e) {
-            if (e.key === 'Enter') sendMsg();
-        }
+        function handleKey(e) { if (e.key === 'Enter') sendMsg(); }
 
-        // Send Friend Request
-        function sendRequest(targetUser) {
-            socket.emit('sendFriendRequest', { from: myUsername, to: targetUser });
-            alert(`Friend request sent to ${targetUser}`);
-        }
+        function sendRequest(targetUser) { socket.emit('sendFriendRequest', { from: myUsername, to: targetUser }); }
+        function acceptRequest(fromUser) { socket.emit('acceptFriendRequest', { me: myUsername, friend: fromUser }); }
+        function rejectRequest(fromUser) { socket.emit('rejectFriendRequest', { me: myUsername, friend: fromUser }); }
 
-        // Accept Friend Request
-        function acceptRequest(fromUser) {
-            socket.emit('acceptFriendRequest', { me: myUsername, friend: fromUser });
-        }
-
-        // Reject Friend Request
-        function rejectRequest(fromUser) {
-            socket.emit('rejectFriendRequest', { me: myUsername, friend: fromUser });
-        }
-
-        // Select Chat Target
         function selectChat(targetName) {
             currentChatTarget = targetName;
-            document.getElementById('chat-title').innerText = targetName === 'GLOBAL' ? 'Global Chat Room' : `Private Chat with ${targetName}`;
-            document.getElementById('messages').innerHTML = ''; // Clear chat area for selected chat
+            document.getElementById('chat-title').innerText = targetName === 'GLOBAL' ? '🌐 Global Chat Room' : `💬 Private Chat with ${targetName}`;
+            document.getElementById('messages').innerHTML = '';
         }
 
-        // Send Message
+        // Send Text
         function sendMsg() {
             const input = document.getElementById('msg-input');
             const text = input.value.trim();
             if (!text) return;
-
-            if (currentChatTarget === 'GLOBAL') {
-                socket.emit('globalMessage', { sender: myUsername, text });
-            } else {
-                socket.emit('privateMessage', { sender: myUsername, to: currentChatTarget, text });
-                appendMsg({ sender: 'You', text }, true);
-            }
+            emitMessage({ type: 'text', content: text });
             input.value = '';
+        }
+
+        // Send Image
+        function sendImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    emitMessage({ type: 'image', content: e.target.result });
+                }
+                reader.readAsDataURL(input.files[0]);
+                input.value = '';
+            }
+        }
+
+        // Voice Recording
+        async function toggleRecord() {
+            const micBtn = document.getElementById('mic-btn');
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            emitMessage({ type: 'audio', content: e.target.result });
+                        };
+                        reader.readAsDataURL(blob);
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                    micBtn.classList.add('recording');
+                } catch(err) { alert('Microphone access denied!'); }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                micBtn.classList.remove('recording');
+            }
+        }
+
+        function emitMessage(payload) {
+            const data = { sender: myUsername, ...payload };
+            if (currentChatTarget === 'GLOBAL') {
+                socket.emit('globalMessage', data);
+            } else {
+                socket.emit('privateMessage', { to: currentChatTarget, ...data });
+                appendMsg(data, true);
+            }
         }
 
         function appendMsg(data, isSent) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `msg ${isSent ? 'sent' : 'received'}`;
-            msgDiv.innerHTML = `<div class="sender">${data.sender}</div><div>${data.text}</div>`;
+            let html = `<div class="sender">${data.sender}</div>`;
+
+            if (data.type === 'text') html += `<div>${data.content}</div>`;
+            else if (data.type === 'image') html += `<img src="${data.content}" />`;
+            else if (data.type === 'audio') html += `<audio controls src="${data.content}"></audio>`;
+
+            msgDiv.innerHTML = html;
             const container = document.getElementById('messages');
             container.appendChild(msgDiv);
             container.scrollTop = container.scrollHeight;
@@ -145,57 +190,35 @@
 
         // Socket Listeners
         socket.on('updateUserData', (data) => {
-            // Online Users List
             const onlineContainer = document.getElementById('online-users');
             onlineContainer.innerHTML = `<div class="user-item" onclick="selectChat('GLOBAL')">🌐 Global Chat Room</div>`;
             
             data.onlineUsers.forEach(u => {
                 if (u !== myUsername && !data.friends.includes(u)) {
-                    onlineContainer.innerHTML += `
-                        <div class="user-item">
-                            <span>${u}</span>
-                            <button class="req-btn" onclick="sendRequest('${u}')">+ Add</button>
-                        </div>`;
+                    onlineContainer.innerHTML += `<div class="user-item"><span>${u}</span><button class="req-btn" onclick="sendRequest('${u}')">+ Add</button></div>`;
                 }
             });
 
-            // Pending Friend Requests
             const reqContainer = document.getElementById('requests-list');
             reqContainer.innerHTML = data.requests.length === 0 ? '<div style="padding:10px; font-size:12px; color:#999;">No requests</div>' : '';
             data.requests.forEach(r => {
-                reqContainer.innerHTML += `
-                    <div class="user-item">
-                        <span>${r}</span>
-                        <div>
-                            <button class="req-btn" onclick="acceptRequest('${r}')">✓</button>
-                            <button class="req-btn reject" onclick="rejectRequest('${r}')">✕</button>
-                        </div>
-                    </div>`;
+                reqContainer.innerHTML += `<div class="user-item"><span>${r}</span><div><button class="req-btn" onclick="acceptRequest('${r}')">✓</button><button class="req-btn reject" onclick="rejectRequest('${r}')">✕</button></div></div>`;
             });
 
-            // Friends List
             const friendsContainer = document.getElementById('friends-list');
             friendsContainer.innerHTML = '';
             data.friends.forEach(f => {
-                friendsContainer.innerHTML += `
-                    <div class="user-item ${currentChatTarget === f ? 'active' : ''}" onclick="selectChat('${f}')">
-                        💬 <b>${f}</b>
-                    </div>`;
+                friendsContainer.innerHTML += `<div class="user-item ${currentChatTarget === f ? 'active' : ''}" onclick="selectChat('${f}')">💬 <b>${f}</b></div>`;
             });
         });
 
         socket.on('receiveGlobalMessage', (data) => {
-            if (currentChatTarget === 'GLOBAL') {
-                appendMsg(data, data.sender === myUsername);
-            }
+            if (currentChatTarget === 'GLOBAL') appendMsg(data, data.sender === myUsername);
         });
 
         socket.on('receivePrivateMessage', (data) => {
-            if (currentChatTarget === data.sender) {
-                appendMsg(data, false);
-            } else {
-                alert(`New message from ${data.sender}!`);
-            }
+            if (currentChatTarget === data.sender) appendMsg(data, false);
+            else alert(`New message/media from ${data.sender}!`);
         });
     </script>
 </body>
