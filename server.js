@@ -7,10 +7,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { maxHttpBufferSize: 1e7 });
 
-// Serve static files
+// 1. Root folder-la irundhu HTML static-a serve panna:
 app.use(express.static(__dirname));
 
-// Home Route Fix (Cannot GET / Error Solution)
+// 2. Main page GET request-ukku index.html-a direct-ah anuppa:
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
