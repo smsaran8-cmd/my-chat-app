@@ -1,144 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PerfectChat - Dashboard</title>
-  <script src="/socket.io/socket.io.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { display: flex; height: 100vh; background-color: #f0f2f5; }
-    
-    /* Auth Modal */
-    #auth-screen { position: fixed; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; }
-    .auth-box { background: #fff; padding: 30px; border-radius: 12px; width: 320px; text-align: center; }
-    .auth-box input, .auth-box select, .auth-box button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; }
-    .auth-box button { background: #0084ff; color: #fff; font-weight: bold; cursor: pointer; border: none; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Pro Chat App</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; height: 100vh; background: #f0f2f5; }
 
-    /* Web App Layout */
-    .sidebar { width: 300px; background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-    .sidebar-header { padding: 15px; background: #0084ff; color: #fff; font-size: 18px; font-weight: bold; }
-    .user-list { flex: 1; overflow-y: auto; }
-    .user-card { padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: center; cursor: pointer; }
-    .user-card:hover { background: #f5f5f5; }
-    .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; }
-    .online { background: #4CAF50; }
-    .offline { background: #9E9E9E; }
-    
-    .chat-area { flex: 1; display: flex; flex-direction: column; background: #fafafa; }
-    .chat-header { padding: 15px; background: #fff; border-bottom: 1px solid #ddd; font-weight: bold; }
-    .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-    
-    .msg { max-width: 60%; padding: 10px 14px; border-radius: 12px; font-size: 14px; }
-    .msg-incoming { background: #fff; border: 1px solid #e0e0e0; align-self: flex-start; }
-    .msg-outgoing { background: #0084ff; color: #fff; align-self: flex-end; }
-    .msg img { max-width: 200px; border-radius: 8px; margin-top: 5px; }
+        /* Login Screen */
+        #login-screen { position: fixed; inset: 0; background: #0078ff; display: flex; justify-content: center; align-items: center; z-index: 10; }
+        .login-box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; width: 320px; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+        .login-box button { width: 100%; padding: 12px; background: #0078ff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
 
-    .input-bar { padding: 12px; background: #fff; border-top: 1px solid #ddd; display: flex; gap: 8px; align-items: center; }
-    .input-bar input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
-    .input-bar button { padding: 10px 15px; background: #0084ff; color: white; border: none; border-radius: 20px; cursor: pointer; }
-  </style>
+        /* Sidebar */
+        #sidebar { width: 300px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+        .user-header { padding: 15px; background: #f7f7f7; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; display: flex; justify-content: space-between; align-items: center; }
+        .section-title { padding: 10px 15px; background: #e9ecef; font-size: 12px; font-weight: bold; color: #6c757d; text-transform: uppercase; }
+        .list-container { flex: 1; overflow-y: auto; }
+        .user-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .user-item:hover { background: #f8f9fa; }
+        .user-item.active { background: #e7f3ff; }
+        .req-btn { padding: 5px 10px; border-radius: 4px; border: none; background: #28a745; color: white; cursor: pointer; font-size: 12px; margin-left: 4px; }
+        .req-btn.reject { background: #dc3545; }
+
+        /* Main Chat Area */
+        #chat-area { flex: 1; display: flex; flex-direction: column; background: #efeae2; }
+        .chat-header { padding: 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; font-size: 16px; }
+        #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 60%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+        .msg.sent { background: #d9fdd3; align-self: flex-end; }
+        .msg.received { background: white; align-self: flex-start; }
+        .msg .sender { font-size: 11px; color: #888; margin-bottom: 3px; font-weight: bold; }
+
+        /* Input Area */
+        .input-box { padding: 15px; background: white; display: flex; gap: 10px; border-top: 1px solid #ddd; }
+        .input-box input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        .input-box button { padding: 12px 20px; background: #0078ff; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; }
+    </style>
 </head>
 <body>
 
-  <!-- Login Modal -->
-  <div id="auth-screen">
-    <div class="auth-box">
-      <h2>Welcome to PerfectChat</h2>
-      <input type="text" id="username" placeholder="Enter Username">
-      <select id="gender">
-        <option value="👨">Male 👨</option>
-        <option value="👩">Female 👩</option>
-      </select>
-      <button onclick="joinChat()">Start Chatting</button>
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>Join Chat App</h2>
+            <input type="text" id="username" placeholder="Enter Your Name..." />
+            <button onclick="login()">Start Chatting</button>
+        </div>
     </div>
-  </div>
 
-  <!-- Main Web Interface -->
-  <div class="sidebar">
-    <div class="sidebar-header">🌐 PerfectChat Users</div>
-    <div class="user-list" id="userList">
-      <div class="user-card" onclick="selectRoom('Public')">
-        <span class="status-dot online"></span>
-        <b>📢 Public Global Chat</b>
-      </div>
+    <!-- App Layout -->
+    <div id="sidebar">
+        <div class="user-header">
+            <span id="my-name">User</span>
+        </div>
+
+        <div class="section-title">Friend Requests</div>
+        <div id="requests-list" class="list-container" style="max-height: 120px;"></div>
+
+        <div class="section-title">Friends (Private Chat)</div>
+        <div id="friends-list" class="list-container"></div>
+
+        <div class="section-title">All Online Users</div>
+        <div id="online-users" class="list-container"></div>
     </div>
-  </div>
 
-  <div class="chat-area">
-    <div class="chat-header" id="currentRoomTitle">📢 Public Global Chat</div>
-    <div class="messages" id="messageBox"></div>
-    
-    <div class="input-bar">
-      <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="sendFile(this)">
-      <button onclick="document.getElementById('imageInput').click()">📷</button>
-      <input type="text" id="msgInput" placeholder="Type a message...">
-      <button onclick="sendMessage()">Send</button>
+    <div id="chat-area">
+        <div class="chat-header" id="chat-title">Select a Friend or Global Chat</div>
+        <div id="messages"></div>
+        <div class="input-box">
+            <input type="text" id="msg-input" placeholder="Type a message..." onkeypress="handleKey(event)"/>
+            <button onclick="sendMsg()">Send</button>
+        </div>
     </div>
-  </div>
 
-  <script>
-    const socket = io();
-    let currentUser = "";
-    let userGender = "";
-    let activeRoom = "Public";
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let myUsername = "";
+        let currentChatTarget = "GLOBAL"; // Default Global Chat
 
-    function joinChat() {
-      currentUser = document.getElementById('username').value;
-      userGender = document.getElementById('gender').value;
-      if (currentUser) {
-        document.getElementById('auth-screen').style.display = 'none';
-        socket.emit('userJoined', { name: currentUser, gender: userGender });
-      }
-    }
-
-    function sendMessage() {
-      const input = document.getElementById('msgInput');
-      if (input.value) {
-        socket.emit('chatMessage', { sender: currentUser, gender: userGender, text: input.value, room: activeRoom });
-        input.value = '';
-      }
-    }
-
-    function sendFile(input) {
-      const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          socket.emit('chatMessage', { sender: currentUser, gender: userGender, image: e.target.result, room: activeRoom });
+        function login() {
+            const name = document.getElementById('username').value.trim();
+            if (name) {
+                myUsername = name;
+                document.getElementById('my-name').innerText = name;
+                document.getElementById('login-screen').style.display = 'none';
+                socket.emit('registerUser', name);
+            }
         }
-        reader.readAsDataURL(file);
-      }
-    }
 
-    socket.on('message', data => {
-      const box = document.getElementById('messageBox');
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `msg ${data.sender === currentUser ? 'msg-outgoing' : 'msg-incoming'}`;
-      
-      let content = `<b>${data.gender} ${data.sender}:</b><br>`;
-      if (data.text) content += data.text;
-      if (data.image) content += `<br><img src="${data.image}">`;
-
-      msgDiv.innerHTML = content;
-      box.appendChild(msgDiv);
-      box.scrollTop = box.scrollHeight;
-    });
-
-    socket.on('updateUsers', users => {
-      const userList = document.getElementById('userList');
-      userList.innerHTML = `<div class="user-card" onclick="selectRoom('Public')"><span class="status-dot online"></span><b>📢 Public Global Chat</b></div>`;
-      
-      users.forEach(u => {
-        if(u.name !== currentUser) {
-          userList.innerHTML += `
-            <div class="user-card">
-              <span class="status-dot online"></span>
-              ${u.gender} ${u.name}
-            </div>`;
+        function handleKey(e) {
+            if (e.key === 'Enter') sendMsg();
         }
-      });
-    });
-  </script>
+
+        // Send Friend Request
+        function sendRequest(targetUser) {
+            socket.emit('sendFriendRequest', { from: myUsername, to: targetUser });
+            alert(`Friend request sent to ${targetUser}`);
+        }
+
+        // Accept Friend Request
+        function acceptRequest(fromUser) {
+            socket.emit('acceptFriendRequest', { me: myUsername, friend: fromUser });
+        }
+
+        // Reject Friend Request
+        function rejectRequest(fromUser) {
+            socket.emit('rejectFriendRequest', { me: myUsername, friend: fromUser });
+        }
+
+        // Select Chat Target
+        function selectChat(targetName) {
+            currentChatTarget = targetName;
+            document.getElementById('chat-title').innerText = targetName === 'GLOBAL' ? 'Global Chat Room' : `Private Chat with ${targetName}`;
+            document.getElementById('messages').innerHTML = ''; // Clear chat area for selected chat
+        }
+
+        // Send Message
+        function sendMsg() {
+            const input = document.getElementById('msg-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            if (currentChatTarget === 'GLOBAL') {
+                socket.emit('globalMessage', { sender: myUsername, text });
+            } else {
+                socket.emit('privateMessage', { sender: myUsername, to: currentChatTarget, text });
+                appendMsg({ sender: 'You', text }, true);
+            }
+            input.value = '';
+        }
+
+        function appendMsg(data, isSent) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${isSent ? 'sent' : 'received'}`;
+            msgDiv.innerHTML = `<div class="sender">${data.sender}</div><div>${data.text}</div>`;
+            const container = document.getElementById('messages');
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Socket Listeners
+        socket.on('updateUserData', (data) => {
+            // Online Users List
+            const onlineContainer = document.getElementById('online-users');
+            onlineContainer.innerHTML = `<div class="user-item" onclick="selectChat('GLOBAL')">🌐 Global Chat Room</div>`;
+            
+            data.onlineUsers.forEach(u => {
+                if (u !== myUsername && !data.friends.includes(u)) {
+                    onlineContainer.innerHTML += `
+                        <div class="user-item">
+                            <span>${u}</span>
+                            <button class="req-btn" onclick="sendRequest('${u}')">+ Add</button>
+                        </div>`;
+                }
+            });
+
+            // Pending Friend Requests
+            const reqContainer = document.getElementById('requests-list');
+            reqContainer.innerHTML = data.requests.length === 0 ? '<div style="padding:10px; font-size:12px; color:#999;">No requests</div>' : '';
+            data.requests.forEach(r => {
+                reqContainer.innerHTML += `
+                    <div class="user-item">
+                        <span>${r}</span>
+                        <div>
+                            <button class="req-btn" onclick="acceptRequest('${r}')">✓</button>
+                            <button class="req-btn reject" onclick="rejectRequest('${r}')">✕</button>
+                        </div>
+                    </div>`;
+            });
+
+            // Friends List
+            const friendsContainer = document.getElementById('friends-list');
+            friendsContainer.innerHTML = '';
+            data.friends.forEach(f => {
+                friendsContainer.innerHTML += `
+                    <div class="user-item ${currentChatTarget === f ? 'active' : ''}" onclick="selectChat('${f}')">
+                        💬 <b>${f}</b>
+                    </div>`;
+            });
+        });
+
+        socket.on('receiveGlobalMessage', (data) => {
+            if (currentChatTarget === 'GLOBAL') {
+                appendMsg(data, data.sender === myUsername);
+            }
+        });
+
+        socket.on('receivePrivateMessage', (data) => {
+            if (currentChatTarget === data.sender) {
+                appendMsg(data, false);
+            } else {
+                alert(`New message from ${data.sender}!`);
+            }
+        });
+    </script>
 </body>
 </html>
