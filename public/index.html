@@ -1,166 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfect Chat</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0b141a; color: #e9edef; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        
-        .card { width: 100%; max-width: 420px; background: #111b21; border-radius: 12px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border: 1px solid #222d34; }
-        h2 { text-align: center; color: #00a884; margin-bottom: 20px; }
-        
-        input, select { width: 100%; background: #2a3942; border: 1px solid #222d34; color: white; padding: 12px; border-radius: 8px; outline: none; margin-bottom: 12px; font-size: 0.95rem; }
-        input::placeholder { color: #8696a0; }
-        
-        .register-fields { display: none; } /* Hidden during Login */
-        
-        button { width: 100%; background: #00a884; color: #111b21; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-bottom: 10px; }
-        button.guest { background: #202c33; color: #e9edef; border: 1px solid #00a884; }
-        button:hover { opacity: 0.9; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PerfectChat - Dashboard</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { display: flex; height: 100vh; background-color: #f0f2f5; }
+    
+    /* Auth Modal */
+    #auth-screen { position: fixed; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; }
+    .auth-box { background: #fff; padding: 30px; border-radius: 12px; width: 320px; text-align: center; }
+    .auth-box input, .auth-box select, .auth-box button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; }
+    .auth-box button { background: #0084ff; color: #fff; font-weight: bold; cursor: pointer; border: none; }
 
-        .toggle-link { text-align: center; font-size: 0.85rem; color: #8696a0; cursor: pointer; margin-top: 10px; }
-        .toggle-link span { color: #00a884; font-weight: bold; }
+    /* Web App Layout */
+    .sidebar { width: 300px; background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 15px; background: #0084ff; color: #fff; font-size: 18px; font-weight: bold; }
+    .user-list { flex: 1; overflow-y: auto; }
+    .user-card { padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: center; cursor: pointer; }
+    .user-card:hover { background: #f5f5f5; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; }
+    .online { background: #4CAF50; }
+    .offline { background: #9E9E9E; }
+    
+    .chat-area { flex: 1; display: flex; flex-direction: column; background: #fafafa; }
+    .chat-header { padding: 15px; background: #fff; border-bottom: 1px solid #ddd; font-weight: bold; }
+    .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    
+    .msg { max-width: 60%; padding: 10px 14px; border-radius: 12px; font-size: 14px; }
+    .msg-incoming { background: #fff; border: 1px solid #e0e0e0; align-self: flex-start; }
+    .msg-outgoing { background: #0084ff; color: #fff; align-self: flex-end; }
+    .msg img { max-width: 200px; border-radius: 8px; margin-top: 5px; }
 
-        /* Chat Screen */
-        #chatBox { display: none; width: 100%; max-width: 450px; height: 90vh; background: #111b21; border-radius: 12px; flex-direction: column; overflow: hidden; border: 1px solid #222d34; }
-        .header { background: #202c33; padding: 15px; font-weight: bold; font-size: 1.1rem; color: #00a884; display: flex; justify-content: space-between; align-items: center; }
-        .messages-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { background: #202c33; padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; align-self: flex-start; }
-        .msg strong { color: #00a884; font-size: 0.8rem; display: block; margin-bottom: 2px; }
-        .chat-form { display: flex; padding: 10px; background: #202c33; gap: 8px; }
-        .chat-form input { flex: 1; margin: 0; }
-        .chat-form button { width: auto; padding: 0 20px; margin: 0; }
-    </style>
+    .input-bar { padding: 12px; background: #fff; border-top: 1px solid #ddd; display: flex; gap: 8px; align-items: center; }
+    .input-bar input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+    .input-bar button { padding: 10px 15px; background: #0084ff; color: white; border: none; border-radius: 20px; cursor: pointer; }
+  </style>
 </head>
 <body>
 
-    <!-- Auth Container -->
-    <div class="card" id="authCard">
-        <h2 id="authTitle">🔒 Login Chat</h2>
-        <form id="authForm">
-            <input type="text" id="authUsername" placeholder="Username" required />
-            <input type="password" id="authPassword" placeholder="Password" required />
-            
-            <!-- Extra Fields for Registration -->
-            <div class="register-fields" id="registerFields">
-                <input type="number" id="authAge" placeholder="Age" />
-                <label style="font-size: 0.8rem; color: #8696a0; display:block; margin-bottom:5px;">Date of Birth:</label>
-                <input type="date" id="authDob" />
-                <select id="authSex">
-                    <option value="" disabled selected>Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-                <input type="text" id="authLocation" placeholder="Location (City/Country)" />
-            </div>
-
-            <button type="submit" id="authBtn">Login</button>
-        </form>
-        <button class="guest" onclick="loginAsGuest()">Continue as Guest 👤</button>
-        <div class="toggle-link" id="toggleAuth" onclick="toggleAuthMode()">
-            Don't have an account? <span>Register</span>
-        </div>
+  <!-- Login Modal -->
+  <div id="auth-screen">
+    <div class="auth-box">
+      <h2>Welcome to PerfectChat</h2>
+      <input type="text" id="username" placeholder="Enter Username">
+      <select id="gender">
+        <option value="👨">Male 👨</option>
+        <option value="👩">Female 👩</option>
+      </select>
+      <button onclick="joinChat()">Start Chatting</button>
     </div>
+  </div>
 
-    <!-- Chat Container -->
-    <div id="chatBox">
-        <div class="header">
-            <span>💬 Live Chat</span>
-            <span id="userBadge" style="font-size: 0.85rem; color: #8696a0;"></span>
-        </div>
-        <div class="messages-box" id="msgBox"></div>
-        <form class="chat-form" id="chatForm">
-            <input type="text" id="message" placeholder="Type message..." required autocomplete="off" />
-            <button type="submit">Send</button>
-        </form>
+  <!-- Main Web Interface -->
+  <div class="sidebar">
+    <div class="sidebar-header">🌐 PerfectChat Users</div>
+    <div class="user-list" id="userList">
+      <div class="user-card" onclick="selectRoom('Public')">
+        <span class="status-dot online"></span>
+        <b>📢 Public Global Chat</b>
+      </div>
     </div>
+  </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-        let isRegisterMode = false;
-        let currentUser = "";
+  <div class="chat-area">
+    <div class="chat-header" id="currentRoomTitle">📢 Public Global Chat</div>
+    <div class="messages" id="messageBox"></div>
+    
+    <div class="input-bar">
+      <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="sendFile(this)">
+      <button onclick="document.getElementById('imageInput').click()">📷</button>
+      <input type="text" id="msgInput" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
 
-        function toggleAuthMode() {
-            isRegisterMode = !isRegisterMode;
-            const regFields = document.getElementById('registerFields');
-            
-            if (isRegisterMode) {
-                document.getElementById('authTitle').innerText = "📝 Register Profile";
-                document.getElementById('authBtn').innerText = "Register Profile";
-                regFields.style.display = 'block';
-                document.getElementById('toggleAuth').innerHTML = "Already have an account? <span>Login</span>";
-            } else {
-                document.getElementById('authTitle').innerText = "🔒 Login Chat";
-                document.getElementById('authBtn').innerText = "Login";
-                regFields.style.display = 'none';
-                document.getElementById('toggleAuth').innerHTML = "Don't have an account? <span>Register</span>";
-            }
+  <script>
+    const socket = io();
+    let currentUser = "";
+    let userGender = "";
+    let activeRoom = "Public";
+
+    function joinChat() {
+      currentUser = document.getElementById('username').value;
+      userGender = document.getElementById('gender').value;
+      if (currentUser) {
+        document.getElementById('auth-screen').style.display = 'none';
+        socket.emit('userJoined', { name: currentUser, gender: userGender });
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('msgInput');
+      if (input.value) {
+        socket.emit('chatMessage', { sender: currentUser, gender: userGender, text: input.value, room: activeRoom });
+        input.value = '';
+      }
+    }
+
+    function sendFile(input) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          socket.emit('chatMessage', { sender: currentUser, gender: userGender, image: e.target.result, room: activeRoom });
         }
+        reader.readAsDataURL(file);
+      }
+    }
 
-        document.getElementById('authForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('authUsername').value;
-            const password = document.getElementById('authPassword').value;
+    socket.on('message', data => {
+      const box = document.getElementById('messageBox');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `msg ${data.sender === currentUser ? 'msg-outgoing' : 'msg-incoming'}`;
+      
+      let content = `<b>${data.gender} ${data.sender}:</b><br>`;
+      if (data.text) content += data.text;
+      if (data.image) content += `<br><img src="${data.image}">`;
 
-            let bodyData = { username, password };
+      msgDiv.innerHTML = content;
+      box.appendChild(msgDiv);
+      box.scrollTop = box.scrollHeight;
+    });
 
-            if (isRegisterMode) {
-                bodyData.age = document.getElementById('authAge').value;
-                bodyData.dob = document.getElementById('authDob').value;
-                bodyData.sex = document.getElementById('authSex').value;
-                bodyData.location = document.getElementById('authLocation').value;
-            }
-
-            const endpoint = isRegisterMode ? '/register' : '/login';
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bodyData)
-            });
-
-            const data = await res.json();
-            alert(data.message || 'Success!');
-
-            if (data.success && !isRegisterMode) {
-                startChat(data.username);
-            } else if (data.success && isRegisterMode) {
-                toggleAuthMode(); // Switch back to login view after successful registration
-            }
-        });
-
-        function loginAsGuest() {
-            const guestName = "Guest_" + Math.floor(1000 + Math.random() * 9000);
-            startChat(guestName);
+    socket.on('updateUsers', users => {
+      const userList = document.getElementById('userList');
+      userList.innerHTML = `<div class="user-card" onclick="selectRoom('Public')"><span class="status-dot online"></span><b>📢 Public Global Chat</b></div>`;
+      
+      users.forEach(u => {
+        if(u.name !== currentUser) {
+          userList.innerHTML += `
+            <div class="user-card">
+              <span class="status-dot online"></span>
+              ${u.gender} ${u.name}
+            </div>`;
         }
-
-        function startChat(username) {
-            currentUser = username;
-            document.getElementById('authCard').style.display = 'none';
-            document.getElementById('chatBox').style.display = 'flex';
-            document.getElementById('userBadge').innerText = "Logged as: " + currentUser;
-        }
-
-        document.getElementById('chatForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const msgInput = document.getElementById('message');
-            if (msgInput.value) {
-                socket.emit('chat message', { user: currentUser, text: msgInput.value });
-                msgInput.value = '';
-            }
-        });
-
-        socket.on('chat message', (data) => {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'msg';
-            msgDiv.innerHTML = `<strong>${data.user}</strong>${data.text}`;
-            const msgBox = document.getElementById('msgBox');
-            msgBox.appendChild(msgDiv);
-            msgBox.scrollTop = msgBox.scrollHeight;
-        });
-    </script>
+      });
+    });
+  </script>
 </body>
 </html>
