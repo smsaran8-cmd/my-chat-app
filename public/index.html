@@ -6,70 +6,91 @@
     <title>Friends Tamil Chat</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { height: 100vh; background: #18191a; color: #fff; overflow: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { height: 100vh; background: #18191a; color: #fff; overflow: hidden; position: relative; }
 
         /* --- 1. LANDING PAGE --- */
         #landing-page {
-            position: fixed; inset: 0; z-index: 100;
+            position: fixed; inset: 0; z-index: 1000;
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px;
         }
         .hero-title { font-size: 28px; font-weight: bold; margin: 15px 0 8px; }
         .hero-sub { font-size: 14px; color: #ccc; max-width: 320px; line-height: 1.4; margin-bottom: 25px; }
-        
         .btn-green { background: #76b01e; color: white; border: none; padding: 12px 40px; border-radius: 25px; font-weight: bold; font-size: 16px; margin-bottom: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .btn-dark { background: #242526; color: white; border: 1px solid #3a3b3c; padding: 12px 40px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; }
 
         /* --- 2. GUEST LOGIN MODAL --- */
         #login-modal {
-            position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.8);
+            position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.8);
             display: none; justify-content: center; align-items: center; padding: 20px;
         }
         .modal-box { background: white; color: #333; width: 100%; max-width: 340px; border-radius: 8px; padding: 20px; position: relative; }
         .close-modal { position: absolute; top: 12px; right: 15px; font-size: 20px; cursor: pointer; color: #666; }
         .modal-title { font-weight: bold; font-size: 18px; margin-bottom: 15px; }
         .modal-input { width: 100%; padding: 12px; background: #f0f2f5; border: 1px solid #ddd; border-radius: 4px; font-size: 15px; margin-bottom: 12px; outline: none; }
-        
-        .captcha-box { border: 1px solid #d3d3d3; background: #f9f9f9; padding: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .captcha-box { border: 1px solid #d3d3d3; background: #f9f9f9; padding: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; cursor: pointer; }
         .captcha-left { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555; }
         .captcha-left input { width: 20px; height: 20px; }
-
         .btn-cyan { width: 100%; background: #00a8e8; color: white; border: none; padding: 12px; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
 
         /* --- 3. MAIN CHAT APP --- */
-        #chat-container { display: flex; flex-direction: column; height: 100vh; background: #fff; color: #000; }
+        #chat-container { display: flex; flex-direction: column; height: 100vh; background: #fff; color: #000; position: relative; }
         
-        /* Top Navigation Bar */
-        .top-navbar { background: #242526; color: white; height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
+        .top-navbar { background: #242526; color: white; height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; flex-shrink: 0; }
         .nav-right { display: flex; align-items: center; gap: 18px; font-size: 18px; }
+        .nav-icon { cursor: pointer; position: relative; }
+        .nav-badge { position: absolute; top: -5px; right: -5px; background: #e41e3f; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; }
 
-        /* Announcement Topic Bar */
-        .topic-bar { background: #d1e7dd; color: #0f5132; padding: 10px 15px; font-size: 13px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #badbcc; }
-
-        /* Messages Area */
-        #messages-list { flex: 1; overflow-y: auto; padding: 15px; background: #ffffff; display: flex; flex-direction: column; gap: 12px; }
+        .topic-bar { background: #d1e7dd; color: #0f5132; padding: 10px 15px; font-size: 13px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #badbcc; flex-shrink: 0; }
         
+        #messages-list { flex: 1; overflow-y: auto; padding: 15px; background: #ffffff; display: flex; flex-direction: column; gap: 12px; }
         .msg-row { display: flex; gap: 10px; align-items: flex-start; }
         .avatar { width: 38px; height: 38px; border-radius: 50%; background: #00a8e8; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; flex-shrink: 0; }
-        
         .msg-content { flex: 1; }
         .msg-header { font-size: 13px; color: #65676b; margin-bottom: 2px; display: flex; justify-content: space-between; }
         .msg-sender { font-weight: bold; color: #050505; }
         .msg-text { font-size: 14px; color: #050505; line-height: 1.4; word-break: break-word; }
         .msg-text img { max-width: 200px; border-radius: 8px; margin-top: 5px; }
-        .msg-text audio { max-width: 220px; margin-top: 5px; }
 
-        .system-msg { text-align: center; font-size: 12px; color: #65676b; margin: 5px 0; }
-
-        /* Bottom Input Bar */
-        .bottom-bar { padding: 10px 12px; background: #f0f2f5; border-top: 1px solid #e4e6eb; display: flex; align-items: center; gap: 8px; }
+        .bottom-bar { padding: 10px 12px; background: #f0f2f5; border-top: 1px solid #e4e6eb; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .chat-input { flex: 1; background: white; border: 1px solid #ccc; padding: 10px 15px; border-radius: 20px; font-size: 14px; outline: none; }
-        .icon-btn { font-size: 20px; color: #65676b; cursor: pointer; padding: 5px; border: none; background: transparent; }
-        .send-btn { font-size: 20px; color: #00a8e8; cursor: pointer; border: none; background: transparent; }
-        .recording { color: #e41e3f !important; animation: pulse 1s infinite; }
+        .icon-btn { font-size: 20px; color: #65676b; cursor: pointer; border: none; background: transparent; padding: 5px; }
+        .send-btn { font-size: 20px; color: #00a8e8; cursor: pointer; border: none; background: transparent; padding: 5px; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        /* --- DROPDOWNS & DRAWERS --- */
+        .ftc-dropdown {
+            position: absolute; top: 55px; right: 15px; width: 280px; background: white; color: #333;
+            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 500; display: none; padding: 15px; text-align: center;
+        }
+        .ftc-dropdown-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px; font-size: 15px; }
+        .empty-icon { font-size: 40px; color: #8a96a3; margin: 10px 0; }
+
+        /* Profile Dropdown */
+        .profile-card { text-align: left; }
+        .profile-user-info { display: flex; gap: 12px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+        .profile-menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f5f5f5; cursor: pointer; font-size: 14px; color: #444; }
+
+        /* Left Side Drawer (Hamburger Menu) */
+        #left-drawer {
+            position: fixed; top: 0; left: -280px; width: 260px; height: 100vh; background: white; color: #333;
+            z-index: 999; transition: left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.2); overflow-y: auto;
+        }
+        #left-drawer.open { left: 0; }
+        .drawer-header { background: #e91e63; color: white; padding: 15px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .drawer-menu { padding: 10px 0; }
+        .drawer-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; font-size: 14px; color: #333; cursor: pointer; }
+        .drawer-item:hover { background: #f0f2f5; }
+        .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 990; display: none; }
+
+        /* --- DYNAMIC CONTENT VIEWS (For Room list, News, Rules, etc.) --- */
+        #dynamic-view {
+            position: fixed; inset: 0; background: #fff; color: #333; z-index: 1500; display: none; flex-direction: column;
+        }
+        .view-header { background: #242526; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; font-size: 16px; font-weight: bold; }
+        .view-body { flex: 1; overflow-y: auto; padding: 20px; }
+        .room-card { background: #f0f2f5; padding: 15px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .room-card:hover { background: #e4e6eb; }
     </style>
 </head>
 <body>
@@ -90,9 +111,9 @@
             <span class="close-modal" onclick="closeLogin()">&times;</span>
             <div class="modal-title">Guest login</div>
             
-            <input type="text" id="username-input" class="modal-input" placeholder="Username" />
+            <input type="text" id="username-input" class="modal-input" placeholder="Username" autocomplete="off" />
             
-            <div class="captcha-box">
+            <div class="captcha-box" onclick="toggleCaptcha()">
                 <div class="captcha-left">
                     <input type="checkbox" id="captcha-check" />
                     <label for="captcha-check">I'm not a robot</label>
@@ -104,36 +125,138 @@
         </div>
     </div>
 
+    <!-- LEFT SIDE DRAWER (HAMBURGER MENU) -->
+    <div id="drawer-overlay" class="drawer-overlay" onclick="closeDrawer()"></div>
+    <div id="left-drawer">
+        <div class="drawer-header">
+            <div style="width:30px; height:30px; background:#fff; border-radius:50%; color:#e91e63; display:flex; align-items:center; justify-content:center; font-weight:bold;">F</div>
+            <div>
+                <div style="font-size:11px; opacity:0.8;">Current room</div>
+                <div id="drawer-room-name" style="font-size:15px;">FTC Main Chat Room</div>
+            </div>
+        </div>
+        <div class="drawer-menu">
+            <div class="drawer-item" onclick="openView('rooms')"><i class="fa-solid fa-house" style="color:#00a8e8"></i> Room list</div>
+            <div class="drawer-item" onclick="openView('news')"><i class="fa-solid fa-newspaper" style="color:#00a8e8"></i> News</div>
+            <div class="drawer-item" onclick="openView('gamewall')"><i class="fa-solid fa-certificate" style="color:#00a8e8"></i> GAME Wall</div>
+            <div class="drawer-item" onclick="openView('anniversary')"><i class="fa-solid fa-certificate" style="color:#e91e63"></i> FTC 15th Anniversary</div>
+            <div class="drawer-item" onclick="openView('leaderboard')"><i class="fa-solid fa-trophy" style="color:#00a8e8"></i> Leaderboard</div>
+            <div class="drawer-item" onclick="openView('audio')"><i class="fa-solid fa-link" style="color:#00a8e8"></i> JINGILI audio mixer</div>
+            <div class="drawer-item" onclick="openView('quiz')"><i class="fa-solid fa-circle-question" style="color:#00a8e8"></i> Quiz scores</div>
+            <div class="drawer-item" onclick="openView('rules')"><i class="fa-solid fa-book" style="color:#00a8e8"></i> RULES & Rule Wall</div>
+            <div class="drawer-item" onclick="openView('birthday')"><i class="fa-solid fa-gift" style="color:#00a8e8"></i> BirthDay Alert</div>
+        </div>
+    </div>
+
+    <!-- DYNAMIC FULLSCREEN VIEWS (Room List, News, Leaderboard etc.) -->
+    <div id="dynamic-view">
+        <div class="view-header">
+            <i class="fa-solid fa-arrow-left" style="cursor:pointer;" onclick="closeView()"></i>
+            <span id="view-title">View</span>
+        </div>
+        <div id="view-content" class="view-body">
+            <!-- Dynamic content loads here -->
+        </div>
+    </div>
+
     <!-- 3. MAIN CHAT APP -->
     <div id="chat-container">
+        <!-- TOP NAVBAR -->
         <div class="top-navbar">
-            <i class="fa-solid fa-bars" style="font-size: 20px;"></i>
+            <i class="fa-solid fa-bars nav-icon" onclick="openDrawer()"></i>
             <div class="nav-right">
-                <i class="fa-solid fa-gift" style="color: #ff4757;"></i>
-                <i class="fa-solid fa-rotate"></i>
-                <i class="fa-solid fa-envelope"></i>
-                <i class="fa-solid fa-bell"></i>
-                <i class="fa-solid fa-circle-user" style="color: #2ed573;"></i>
+                <i class="fa-solid fa-gift nav-icon" style="color: #ff4757;" onclick="togglePopup('gift-pop')">
+                    <span class="nav-badge">1</span>
+                </i>
+                <i class="fa-solid fa-rotate nav-icon" onclick="location.reload()"></i>
+                <i class="fa-solid fa-envelope nav-icon" onclick="togglePopup('private-pop')"></i>
+                <i class="fa-solid fa-bell nav-icon" onclick="togglePopup('notif-pop')"></i>
+                <i class="fa-solid fa-circle-user nav-icon" style="color: #2ed573;" onclick="togglePopup('profile-pop')"></i>
             </div>
         </div>
 
+        <!-- DROPDOWN POPUPS -->
+        <!-- Gift Popup -->
+        <div id="gift-pop" class="ftc-dropdown">
+            <div class="ftc-dropdown-header">
+                <span><i class="fa-solid fa-gift" style="color:#ff4757"></i> Daily Gift</span>
+                <i class="fa-solid fa-xmark" onclick="closeAllPopups()" style="cursor:pointer"></i>
+            </div>
+            <div style="padding: 10px 0;">🎁 Daily bonus claim ready! Tap to claim +100 Gold Coins.</div>
+            <button class="btn-cyan" style="margin-top:10px" onclick="alert('Successfully claimed +100 Gold Coins!'); closeAllPopups();">Claim Reward</button>
+        </div>
+
+        <!-- Private Inbox Dropdown -->
+        <div id="private-pop" class="ftc-dropdown">
+            <div class="ftc-dropdown-header">
+                <span><i class="fa-solid fa-comments"></i> Private</span>
+                <i class="fa-solid fa-trash" style="cursor:pointer; color:#8a96a3;" onclick="alert('Inbox cleared!')"></i>
+            </div>
+            <div class="empty-icon"><i class="fa-solid fa-desktop"></i></div>
+            <div style="font-size:13px; color:#666;">Your private chat list is empty</div>
+        </div>
+
+        <!-- Notifications Dropdown -->
+        <div id="notif-pop" class="ftc-dropdown">
+            <div class="ftc-dropdown-header">
+                <span><i class="fa-solid fa-bell"></i> Notifications</span>
+                <i class="fa-solid fa-trash" style="cursor:pointer; color:#8a96a3;" onclick="alert('Notifications cleared!')"></i>
+            </div>
+            <div class="empty-icon"><i class="fa-solid fa-desktop"></i></div>
+            <div style="font-size:13px; color:#666;">You currently have no notifications</div>
+        </div>
+
+        <!-- Profile Dropdown -->
+        <div id="profile-pop" class="ftc-dropdown">
+            <div class="profile-card">
+                <div class="profile-user-info">
+                    <div class="avatar" id="prof-avatar">G</div>
+                    <div>
+                        <div style="font-size:11px; color:#666;">Guest</div>
+                        <div id="prof-name" style="font-weight:bold; font-size:16px;">User</div>
+                    </div>
+                </div>
+                <div class="profile-menu-item" onclick="alert('Your Gold Balance: 150 Coins')">
+                    <i class="fa-solid fa-coins" style="color:#00a8e8"></i> Gold balance
+                </div>
+                <div class="profile-menu-item" onclick="alert('Profile editor option opened!')">
+                    <i class="fa-solid fa-user-pen" style="color:#00a8e8"></i> Edit profile
+                </div>
+                <div class="profile-menu-item" onclick="location.reload()" style="color:#e41e3f">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </div>
+            </div>
+        </div>
+
+        <!-- TOPIC BAR -->
         <div class="topic-bar">
             <i class="fa-solid fa-circle-exclamation" style="font-size: 18px; color: #ffb142;"></i>
             <div><b>Topic:</b> Welcome to Friends Tamil Chat! 🎈 Sharing personal details is at your own risk.</div>
         </div>
 
+        <!-- MESSAGES AREA -->
         <div id="messages-list">
-            <div class="system-msg"><i class="fa-solid fa-triangle-exclamation"></i> Welcome to the Global Chat Room!</div>
+            <div class="msg-row">
+                <div class="avatar" style="background:#ff4757">A</div>
+                <div class="msg-content">
+                    <div class="msg-header">
+                        <span class="msg-sender" style="color:#e91e63">Alea</span>
+                        <span>13:31</span>
+                    </div>
+                    <div class="msg-text">hey hi you happy friendship day kwn ku 😃 doi</div>
+                </div>
+            </div>
         </div>
 
+        <!-- BOTTOM INPUT BAR -->
         <div class="bottom-bar">
-            <button class="icon-btn"><i class="fa-regular fa-face-smile"></i></button>
+            <button class="icon-btn" onclick="alert('Emoji selector active!')"><i class="fa-regular fa-face-smile"></i></button>
             <button class="icon-btn" onclick="document.getElementById('img-file').click()"><i class="fa-solid fa-camera"></i></button>
             <input type="file" id="img-file" accept="image/*" style="display:none" onchange="sendImage(this)"/>
 
-            <input type="text" id="msg-input" class="chat-input" placeholder="Type here..." onkeypress="handleKey(event)"/>
+            <input type="text" id="msg-input" class="chat-input" placeholder="Type here..." autocomplete="off" onkeypress="handleKey(event)"/>
             
-            <button class="icon-btn" id="mic-btn" onclick="toggleRecord()"><i class="fa-solid fa-microphone"></i></button>
+            <button class="icon-btn" onclick="alert('Voice message recording...')"><i class="fa-solid fa-microphone"></i></button>
             <button class="send-btn" onclick="sendText()"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
@@ -142,73 +265,130 @@
     <script>
         const socket = io();
         let myUsername = "";
-        let mediaRecorder, audioChunks = [], isRecording = false;
 
         function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
         function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
+        function toggleCaptcha() { document.getElementById('captcha-check').checked = !document.getElementById('captcha-check').checked; }
 
         function startApp() {
             const name = document.getElementById('username-input').value.trim();
             const captcha = document.getElementById('captcha-check').checked;
-            
             if (!name) { alert('Please enter a username!'); return; }
             if (!captcha) { alert('Please check I\'m not a robot!'); return; }
 
             myUsername = name;
+            document.getElementById('prof-name').innerText = name;
+            document.getElementById('prof-avatar').innerText = name.charAt(0).toUpperCase();
+
             document.getElementById('landing-page').style.display = 'none';
             document.getElementById('login-modal').style.display = 'none';
-            
             socket.emit('registerUser', name);
         }
 
-        function handleKey(e) { if (e.key === 'Enter') sendText(); }
+        /* POPUPS */
+        function closeAllPopups() { document.querySelectorAll('.ftc-dropdown').forEach(el => el.style.display = 'none'); }
+        function togglePopup(id) {
+            const el = document.getElementById(id);
+            const isVisible = el.style.display === 'block';
+            closeAllPopups();
+            if (!isVisible) el.style.display = 'block';
+        }
 
+        /* DRAWER & VIEWS */
+        function openDrawer() {
+            document.getElementById('left-drawer').classList.add('open');
+            document.getElementById('drawer-overlay').style.display = 'block';
+        }
+        function closeDrawer() {
+            document.getElementById('left-drawer').classList.remove('open');
+            document.getElementById('drawer-overlay').style.display = 'none';
+        }
+
+        function openView(type) {
+            closeDrawer();
+            const view = document.getElementById('dynamic-view');
+            const title = document.getElementById('view-title');
+            const content = document.getElementById('view-content');
+            view.style.display = 'flex';
+
+            if (type === 'rooms') {
+                title.innerText = 'Chat Rooms List';
+                content.innerHTML = `
+                    <div class="room-card" onclick="switchRoom('FTC Main Chat Room')">
+                        <div><b>FTC Main Chat Room</b><div style="font-size:12px; color:#666;">Active members chatting</div></div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                    <div class="room-card" onclick="switchRoom('Tamil Friends Fun Room')">
+                        <div><b>Tamil Friends Fun Room</b><div style="font-size:12px; color:#666;">Music & casual talk</div></div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                    <div class="room-card" onclick="switchRoom('Night Owls Room')">
+                        <div><b>Night Owls Room</b><div style="font-size:12px; color:#666;">Late night vibes</div></div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                `;
+            } else if (type === 'news') {
+                title.innerText = 'FTC Community News';
+                content.innerHTML = `<h3>📢 Latest Updates</h3><p style="margin-top:10px; line-height:1.5;">Welcome to Friends Tamil Chat BOMT version! Enjoy seamless live chats, media uploads, daily gifts, and active rooms.</p>`;
+            } else if (type === 'leaderboard') {
+                title.innerText = 'Top Chatters Leaderboard';
+                content.innerHTML = `
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div style="padding:10px; background:#f0f2f5; border-radius:5px; display:flex; justify-content:space-between;"><span>1. 👑 Karthik</span><span>4,820 Points</span></div>
+                        <div style="padding:10px; background:#f0f2f5; border-radius:5px; display:flex; justify-content:space-between;"><span>2. 🥈 Priya</span><span>3,910 Points</span></div>
+                        <div style="padding:10px; background:#f0f2f5; border-radius:5px; display:flex; justify-content:space-between;"><span>3. 🥉 Murugan</span><span>3,450 Points</span></div>
+                    </div>
+                `;
+            } else if (type === 'rules') {
+                title.innerText = 'Chat Rules & Guidelines';
+                content.innerHTML = `<ul style="padding-left:20px; line-height:1.8;"><li>Be respectful to all members.</li><li>No abusive or vulgar language in public chat.</li><li>Sharing personal phone numbers/details is at your own risk.</li><li>Follow moderators' instructions.</li></ul>`;
+            } else if (type === 'gamewall') {
+                title.innerText = 'GAME Wall';
+                content.innerHTML = `<div style="text-align:center; padding:30px;">🎮 Mini-games section coming soon! Play & win extra gold coins.</div>`;
+            } else if (type === 'anniversary') {
+                title.innerText = 'FTC 15th Anniversary';
+                content.innerHTML = `<div style="text-align:center; padding:30px;">🎉 Celebrating 15 Glorious Years of Friendship & Tamil Community! Thank you for being part of us.</div>`;
+            } else if (type === 'audio') {
+                title.innerText = 'JINGILI Audio Mixer';
+                content.innerHTML = `<div style="text-align:center; padding:30px;">🎵 Audio player streaming live Tamil tracks. Enjoy music while chatting!</div>`;
+            } else if (type === 'quiz') {
+                title.innerText = 'Quiz Scores';
+                content.innerHTML = `<div style="text-align:center; padding:30px;">🏆 Your Quiz Score: 0 Correct Answers. Participate in weekly quizzes!</div>`;
+            } else if (type === 'birthday') {
+                title.innerText = 'BirthDay Alerts';
+                content.innerHTML = `<div style="text-align:center; padding:30px;">🎂 No birthdays today! Wish your fellow friends when it's their special day.</div>`;
+            }
+        }
+
+        function closeView() {
+            document.getElementById('dynamic-view').style.display = 'none';
+        }
+
+        function switchRoom(roomName) {
+            document.getElementById('drawer-room-name').innerText = roomName;
+            closeView();
+            alert(`Switched to room: ${roomName}`);
+        }
+
+        /* MESSAGING */
+        function handleKey(e) { if (e.key === 'Enter') sendText(); }
         function sendText() {
             const input = document.getElementById('msg-input');
             const text = input.value.trim();
             if (!text) return;
-            socket.emit('globalMessage', { sender: myUsername, type: 'text', content: text, time: getCurrentTime() });
+            socket.emit('globalMessage', { sender: myUsername || 'Guest', type: 'text', content: text, time: getCurrentTime() });
             input.value = '';
         }
-
         function sendImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    socket.emit('globalMessage', { sender: myUsername, type: 'image', content: e.target.result, time: getCurrentTime() });
+                    socket.emit('globalMessage', { sender: myUsername || 'Guest', type: 'image', content: e.target.result, time: getCurrentTime() });
                 }
                 reader.readAsDataURL(input.files[0]);
                 input.value = '';
             }
         }
-
-        async function toggleRecord() {
-            const micBtn = document.getElementById('mic-btn');
-            if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            socket.emit('globalMessage', { sender: myUsername, type: 'audio', content: e.target.result, time: getCurrentTime() });
-                        };
-                        reader.readAsDataURL(blob);
-                    };
-                    mediaRecorder.start();
-                    isRecording = true;
-                    micBtn.classList.add('recording');
-                } catch(err) { alert('Microphone permission needed!'); }
-            } else {
-                mediaRecorder.stop();
-                isRecording = false;
-                micBtn.classList.remove('recording');
-            }
-        }
-
         function getCurrentTime() {
             const d = new Date();
             return `${d.getHours()}:${d.getMinutes()<10?'0':''}${d.getMinutes()}`;
@@ -218,12 +398,7 @@
             const msgList = document.getElementById('messages-list');
             const msgRow = document.createElement('div');
             msgRow.className = 'msg-row';
-
-            let bodyHtml = '';
-            if (data.type === 'text') bodyHtml = `<div>${data.content}</div>`;
-            else if (data.type === 'image') bodyHtml = `<img src="${data.content}" />`;
-            else if (data.type === 'audio') bodyHtml = `<audio controls src="${data.content}"></audio>`;
-
+            let bodyHtml = data.type === 'image' ? `<img src="${data.content}" />` : `<div>${data.content}</div>`;
             const avatarLetter = data.sender ? data.sender.charAt(0).toUpperCase() : 'U';
 
             msgRow.innerHTML = `
