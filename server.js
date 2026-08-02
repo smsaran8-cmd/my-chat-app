@@ -8,15 +8,15 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-const users = {};       // username -> socket.id
-const userSockets = {}; // username -> socket.id (reference)
+const users = {};          // username -> socket.id
+const userSockets = {};    // username -> socket.id
 const friendRequests = {}; // username -> array of senders
 const userFriends = {};    // username -> array of friends
 
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
-    socket.addEventListener('registerUser', (username) => {
+    socket.on('registerUser', (username) => {
         if (!username) return;
         users[username] = socket.id;
         userSockets[username] = socket.id;
@@ -36,7 +36,6 @@ io.on('connection', (socket) => {
         if (userFriends[me] && !userFriends[me].includes(friend)) userFriends[me].push(friend);
         if (userFriends[friend] && !userFriends[friend].includes(me)) userFriends[friend].push(me);
         
-        // Remove from requests
         friendRequests[me] = friendRequests[me].filter(u => u !== friend);
         
         sendUserDataToUser(me);
@@ -54,7 +53,6 @@ io.on('connection', (socket) => {
         io.emit('receiveGlobalMessage', data);
     });
 
-    // FIXED Private Message Handler
     socket.on('privateMessage', (data) => {
         const targetSid = userSockets[data.to];
         if (targetSid) {
