@@ -9,33 +9,44 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { height: 100vh; width: 100vw; overflow: hidden; background: #f3f4f6; color: #1e293b; display: flex; }
 
-        /* APP CONTAINER - 3 COLUMNS */
-        #app { display: flex; width: 100%; height: 100%; background: #f8fafc; }
+        /* LOGIN SCREEN MODAL */
+        #login-screen {
+            position: fixed; inset: 0; z-index: 9999;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #dbeafe 100%);
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-radius: 24px; padding: 35px 30px; width: 100%; max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); text-align: center;
+        }
+        .login-logo { width: 60px; height: 60px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: white; font-size: 24px; }
+        .login-input { width: 100%; padding: 12px 15px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 12px; outline: none; font-size: 14px; background: #f8fafc; }
+        .btn-primary { width: 100%; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+        .auth-switch { margin-top: 15px; font-size: 13px; color: #64748b; cursor: pointer; }
+
+        /* APP CONTAINER */
+        #app { display: none; width: 100%; height: 100%; background: #f8fafc; }
 
         /* COLUMN 1: LEFT SIDEBAR */
         .sidebar-left { width: 320px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; flex-shrink: 0; }
         .brand-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand-logo { font-size: 20px; font-weight: 800; color: #4f46e5; display: flex; align-items: center; gap: 8px; }
         
-        .btn-new-chat { margin: 0 15px 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25); }
-
-        .search-box { margin: 0 15px 12px; background: #f1f5f9; border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; color: #94a3b8; }
-        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 13px; color: #334155; }
+        .btn-new-chat { margin: 0 15px 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
         .chat-tabs { display: flex; padding: 0 15px; border-bottom: 1px solid #f1f5f9; gap: 15px; }
         .tab-btn { padding: 8px 0; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; }
         .tab-btn.active { color: #4f46e5; border-bottom-color: #4f46e5; }
 
         .chat-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .chat-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; cursor: pointer; transition: background 0.2s; position: relative; }
+        .chat-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; cursor: pointer; transition: background 0.2s; }
         .chat-item:hover, .chat-item.active { background: #f1f5f9; }
         .chat-avatar { width: 42px; height: 42px; border-radius: 50%; background: #6366f1; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; flex-shrink: 0; position: relative; }
         .online-dot { width: 10px; height: 10px; background: #10b981; border: 2px solid white; border-radius: 50%; position: absolute; bottom: 0; right: 0; }
         .chat-meta { flex: 1; overflow: hidden; }
         .chat-title { font-weight: 700; font-size: 14px; color: #0f172a; display: flex; justify-content: space-between; }
-        .chat-time { font-size: 11px; font-weight: normal; color: #94a3b8; }
         .chat-msg-preview { font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
-        .badge-count { background: #6366f1; color: white; font-size: 10px; font-weight: bold; border-radius: 10px; padding: 2px 6px; }
 
         .nav-bottom { height: 60px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-around; align-items: center; color: #64748b; font-size: 11px; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
@@ -54,252 +65,275 @@
         .time-divider { align-self: center; background: #e0e7ff; color: #4338ca; font-size: 11px; padding: 4px 12px; border-radius: 12px; font-weight: 600; margin: 10px 0; }
 
         .msg-left { display: flex; gap: 10px; max-width: 70%; align-self: flex-start; }
-        .msg-left .bubble { background: #ffffff; padding: 12px 16px; border-radius: 0 16px 16px 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; font-size: 14px; color: #1e293b; }
+        .msg-left .bubble { background: #ffffff; padding: 12px 16px; border-radius: 0 16px 16px 16px; border: 1px solid #f1f5f9; font-size: 14px; color: #1e293b; }
         
         .msg-right { display: flex; gap: 10px; max-width: 70%; align-self: flex-end; flex-direction: row-reverse; }
-        .msg-right .bubble { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 12px 16px; border-radius: 16px 0 16px 16px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); font-size: 14px; }
-        
+        .msg-right .bubble { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 12px 16px; border-radius: 16px 0 16px 16px; font-size: 14px; }
         .msg-timestamp { font-size: 10px; opacity: 0.7; margin-left: 8px; float: right; margin-top: 4px; }
 
         /* CHAT INPUT AREA */
-        .chat-footer { background: #ffffff; padding: 12px 20px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; position: relative; }
-        .footer-icons { display: flex; gap: 12px; color: #94a3b8; font-size: 18px; }
-        .footer-icons i { cursor: pointer; transition: color 0.2s; }
-        .footer-icons i:hover { color: #4f46e5; }
-        
+        .chat-footer { background: #ffffff; padding: 12px 20px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; }
+        .footer-icons { display: flex; gap: 12px; color: #94a3b8; font-size: 18px; cursor: pointer; }
         .input-wrapper { flex: 1; background: #f1f5f9; border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; }
-        .input-wrapper input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: #1e293b; }
+        .input-wrapper input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; }
+        .btn-send { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        .btn-send { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }
-
-        /* COLUMN 3: RIGHT SIDEBAR (ONLINE USERS & GIFTS) */
-        .sidebar-right { width: 280px; background: #ffffff; display: flex; flex-direction: column; padding: 20px; gap: 20px; flex-shrink: 0; }
-        .section-header { font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; align-items: center; color: #0f172a; }
-        
-        .online-users-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .online-user-card { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 8px; cursor: pointer; }
-        .online-user-card:hover { background: #f8fafc; }
-
-        /* GIFT WIDGET */
-        .gift-card { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #bbf7d0; border-radius: 16px; padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .gift-box-icon { font-size: 40px; color: #16a34a; }
-        .btn-send-gift { background: #16a34a; color: white; border: none; padding: 8px 20px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; }
-
-        #emoji-picker { position: absolute; bottom: 70px; left: 20px; background: white; border: 1px solid #ddd; border-radius: 12px; padding: 10px; display: none; grid-template-columns: repeat(6, 1fr); gap: 8px; font-size: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        #emoji-picker span { cursor: pointer; }
+        /* COLUMN 3: RIGHT SIDEBAR (ONLINE USERS & REQUESTS) */
+        .sidebar-right { width: 300px; background: #ffffff; display: flex; flex-direction: column; padding: 20px; gap: 20px; flex-shrink: 0; }
+        .section-header { font-weight: 800; font-size: 14px; color: #0f172a; margin-bottom: 8px; }
+        .online-users-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .user-card { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-radius: 8px; background: #f8fafc; }
+        .btn-req { background: #4f46e5; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="login-card">
+            <div class="login-logo"><i class="fa-solid fa-comment-dots"></i></div>
+            <h2 id="auth-title" style="margin-bottom: 5px; color:#1e293b;">Welcome Back</h2>
+            <p id="auth-subtitle" style="font-size:13px; color:#64748b; margin-bottom: 20px;">Login to your chat account</p>
+            
+            <div id="error-msg" style="color: red; font-size: 12px; margin-bottom: 10px;"></div>
+
+            <input type="text" id="username" class="login-input" placeholder="Username">
+            <input type="password" id="password" class="login-input" placeholder="Password">
+            
+            <button class="btn-primary" id="auth-btn" onclick="submitAuth()">Login</button>
+            <div class="auth-switch" id="auth-switch-btn" onclick="toggleAuthMode()">Don't have an account? Register</div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
     <div id="app">
         <!-- 1. LEFT SIDEBAR -->
         <div class="sidebar-left">
             <div class="brand-header">
                 <div class="brand-logo"><i class="fa-solid fa-comment-dots"></i> Perfect Chat</div>
-                <i class="fa-solid fa-bars" style="color:#94a3b8; cursor:pointer;"></i>
             </div>
 
-            <button class="btn-new-chat" onclick="switchToPublicChat()">
-                <i class="fa-solid fa-plus"></i> Public Chat Room
+            <button class="btn-new-chat" onclick="selectChat('public', 'Public Room')">
+                <i class="fa-solid fa-globe"></i> Public Chat Room
             </button>
 
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Search users or chats">
-            </div>
-
             <div class="chat-tabs">
-                <div class="tab-btn active">All Chats</div>
-                <div class="tab-btn">Groups</div>
-                <div class="tab-btn">Unread <span class="badge-count">2</span></div>
+                <div class="tab-btn active">Chats & Friends</div>
             </div>
 
-            <div class="chat-list" id="chat-threads">
-                <!-- Public Chat Room Thread -->
-                <div class="chat-item active" onclick="switchToPublicChat()">
-                    <div class="chat-avatar" style="background:#4f46e5;">
-                        <i class="fa-solid fa-users"></i>
-                    </div>
-                    <div class="chat-meta">
-                        <div class="chat-title">
-                            Public Room
-                            <span class="chat-time">Live</span>
-                        </div>
-                        <div class="chat-msg-preview">Global chat with everyone</div>
-                    </div>
-                </div>
+            <div class="chat-list" id="friends-chat-list">
+                <!-- Friends will populate here -->
             </div>
 
             <div class="nav-bottom">
-                <div class="nav-item"><i class="fa-regular fa-address-book" style="font-size:16px;"></i> Contacts</div>
-                <div class="nav-item"><i class="fa-solid fa-phone" style="font-size:16px;"></i> Calls</div>
-                <div class="nav-item"><i class="fa-solid fa-gear" style="font-size:16px;"></i> Settings</div>
+                <div class="nav-item" onclick="alert('Logged in as ' + currentUsername)"><i class="fa-solid fa-user"></i> Profile</div>
+                <div class="nav-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket" style="color:#ef4444;"></i> Logout</div>
             </div>
         </div>
 
         <!-- 2. MAIN CHAT PANEL -->
         <div class="main-chat">
-            <!-- TOP BAR -->
             <div class="chat-top-bar">
                 <div class="active-user-info">
                     <div class="chat-avatar" id="current-chat-avatar">P</div>
                     <div>
-                        <div style="font-weight:700; font-size:15px;" id="current-chat-title">Public Tamil Chat</div>
-                        <div style="font-size:11px; color:#10b981;">● Online</div>
+                        <div style="font-weight:700; font-size:15px;" id="current-chat-title">Public Room</div>
+                        <div style="font-size:11px; color:#10b981;" id="current-chat-status">● Live Global Chat</div>
                     </div>
                 </div>
 
                 <div class="top-actions">
-                    <div class="top-action-btn" onclick="openGiftModal()"><i class="fa-solid fa-gift"></i> Gift</div>
                     <div class="top-action-btn" onclick="location.reload()"><i class="fa-solid fa-rotate"></i> Refresh</div>
-                    <div class="top-action-btn" onclick="alert('Private Messaging active')"><i class="fa-solid fa-lock"></i> Private</div>
-                    <div class="top-action-btn"><i class="fa-regular fa-bell"></i> Notifications</div>
                 </div>
             </div>
 
-            <!-- CHAT BODY -->
             <div class="chat-body" id="messages-list">
                 <div class="time-divider">Today</div>
             </div>
 
-            <!-- FOOTER INPUT -->
             <div class="chat-footer">
-                <div id="emoji-picker">
-                    <span onclick="addEmoji('😀')">😀</span><span onclick="addEmoji('😂')">😂</span>
-                    <span onclick="addEmoji('😍')">😍</span><span onclick="addEmoji('👍')">👍</span>
-                    <span onclick="addEmoji('❤️')">❤️</span><span onclick="addEmoji('🔥')">🔥</span>
-                </div>
-
                 <div class="footer-icons">
-                    <i class="fa-regular fa-face-smile" onclick="toggleEmojiPicker()"></i>
-                    <i class="fa-solid fa-paperclip" onclick="document.getElementById('file-upload').click()"></i>
-                    <i class="fa-regular fa-image" onclick="document.getElementById('file-upload').click()"></i>
-                    <i class="fa-solid fa-video" style="color:#10b981;" onclick="alert('Starting Video Call...')"></i>
-                    <input type="file" id="file-upload" style="display:none;" onchange="sendImage(this)">
+                    <i class="fa-regular fa-face-smile" onclick="addEmoji('😊')"></i>
+                    <i class="fa-regular fa-image" onclick="alert('Image upload ready')"></i>
                 </div>
-
                 <div class="input-wrapper">
                     <input type="text" id="msg-input" placeholder="Type a message..." onkeypress="handleKey(event)"/>
                 </div>
-
-                <i class="fa-solid fa-microphone" style="color:#94a3b8; font-size:18px; cursor:pointer;"></i>
                 <button class="btn-send" onclick="sendText()"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
 
         <!-- 3. RIGHT SIDEBAR -->
         <div class="sidebar-right">
-            <div class="section-header">
-                <span>● Online Users</span>
-                <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8; cursor:pointer;"></i>
-            </div>
+            <div class="section-header">Friend Requests 📥</div>
+            <div id="requests-container" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px;"></div>
 
+            <div class="section-header">Online Users 🟢</div>
             <div class="online-users-list" id="online-users-container"></div>
-
-            <!-- GIFT WIDGET -->
-            <div class="gift-card">
-                <div class="gift-box-icon">🎁</div>
-                <div style="font-weight:700; font-size:13px; color:#15803d;">Send Gifts to friends!</div>
-                <button class="btn-send-gift" onclick="openGiftModal()">Send Gift</button>
-            </div>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-        let myUsername = localStorage.getItem('ftc_username') || ("User_" + Math.floor(Math.random()*899+100));
+        let currentUsername = localStorage.getItem('ftc_username') || null;
+        let activeRecipient = 'public'; // 'public' or friend username
+        let isRegisterMode = false;
 
         window.onload = function() {
-            socket.emit('registerUser', myUsername);
+            if (currentUsername) {
+                // Auto login if session exists
+                socket.emit('loginUser', { username: currentUsername, password: 'saved_session', isRegister: false });
+            }
         };
 
-        /* LOAD MESSAGES */
-        socket.on('loadHistory', (history) => {
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('auth-title').innerText = isRegisterMode ? 'Create Account' : 'Welcome Back';
+            document.getElementById('auth-subtitle').innerText = isRegisterMode ? 'Register to start chatting' : 'Login to your chat account';
+            document.getElementById('auth-btn').innerText = isRegisterMode ? 'Register' : 'Login';
+            document.getElementById('auth-switch-btn').innerText = isRegisterMode ? 'Already have an account? Login' : "Don't have an account? Register";
+        }
+
+        function submitAuth() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            if(!u || !p) { document.getElementById('error-msg').innerText = 'Fill all fields!'; return; }
+            socket.emit('loginUser', { username: u, password: p, isRegister: isRegisterMode });
+        }
+
+        socket.on('authError', (err) => {
+            document.getElementById('error-msg').innerText = err;
+        });
+
+        socket.on('authSuccess', (username) => {
+            currentUsername = username;
+            localStorage.setItem('ftc_username', username);
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app').style.display = 'flex';
+            loadChatHistory();
+        });
+
+        function logout() {
+            localStorage.removeItem('ftc_username');
+            location.reload();
+        }
+
+        // CHAT SELECTION & HISTORY
+        function selectChat(recipient, title) {
+            activeRecipient = recipient;
+            document.getElementById('current-chat-title').innerText = title;
+            document.getElementById('current-chat-avatar').innerText = title.charAt(0).toUpperCase();
+            loadChatHistory();
+        }
+
+        function loadChatHistory() {
+            socket.emit('loadHistory', { currentUser: currentUsername, targetUser: activeRecipient });
+        }
+
+        socket.on('chatHistory', (history) => {
             const list = document.getElementById('messages-list');
             list.innerHTML = '<div class="time-divider">Today</div>';
             history.forEach(data => appendMessage(data));
         });
 
-        socket.on('receiveGlobalMessage', (data) => appendMessage(data));
+        socket.on('receiveMessage', (data) => {
+            // Check if message belongs to current active view
+            if (data.recipient === activeRecipient || (activeRecipient === 'public' && data.recipient === 'public')) {
+                appendMessage(data);
+            }
+        });
 
         function appendMessage(data) {
             const list = document.getElementById('messages-list');
-            const isMe = data.sender === myUsername;
+            const isMe = data.sender === currentUsername;
             const rowDiv = document.createElement('div');
             rowDiv.className = isMe ? 'msg-right' : 'msg-left';
 
-            let bodyContent = data.type === 'image' ? `<img src="${data.content}" style="max-width:200px; border-radius:8px;"/>` : data.content;
-            const initial = data.sender ? data.sender.charAt(0).toUpperCase() : 'U';
-
             rowDiv.innerHTML = `
-                <div class="chat-avatar" style="width:32px; height:32px; font-size:12px;">${initial}</div>
+                <div class="chat-avatar" style="width:32px; height:32px; font-size:12px;">${data.sender.charAt(0).toUpperCase()}</div>
                 <div class="bubble">
-                    <div style="font-size:11px; font-weight:bold; margin-bottom:2px; opacity:0.8;">${data.sender}</div>
-                    <div>${bodyContent}</div>
-                    <span class="msg-timestamp">${data.time || '10:30 AM'} ${isMe ? '✓✓' : ''}</span>
+                    <div style="font-size:10px; font-weight:bold; margin-bottom:2px; opacity:0.8;">${data.sender}</div>
+                    <div>${data.content}</div>
+                    <span class="msg-timestamp">${data.time || '10:30 AM'}</span>
                 </div>
             `;
             list.appendChild(rowDiv);
             list.scrollTop = list.scrollHeight;
         }
 
-        /* ONLINE USERS */
-        socket.on('updateOnlineList', (users) => {
-            const container = document.getElementById('online-users-container');
-            container.innerHTML = '';
-            users.forEach(u => {
-                const item = document.createElement('div');
-                item.className = 'online-user-card';
-                item.innerHTML = `
-                    <div class="chat-avatar" style="width:34px; height:34px; font-size:13px;">
-                        ${u.username.charAt(0).toUpperCase()}
-                        <div class="online-dot"></div>
-                    </div>
-                    <div style="font-size:13px; font-weight:600;">${u.username}</div>
-                `;
-                container.appendChild(item);
-            });
-        });
-
-        /* SEND MESSAGES & EMOJI */
         function handleKey(e) { if (e.key === 'Enter') sendText(); }
         
         function sendText() {
             const input = document.getElementById('msg-input');
             const val = input.value.trim();
             if(!val) return;
-            socket.emit('globalMessage', { sender: myUsername, type: 'text', content: val });
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            socket.emit('sendMessage', {
+                sender: currentUsername,
+                recipient: activeRecipient,
+                type: 'text',
+                content: val,
+                time: timeStr
+            });
             input.value = '';
-            document.getElementById('emoji-picker').style.display = 'none';
         }
 
-        function sendImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    socket.emit('globalMessage', { sender: myUsername, type: 'image', content: e.target.result });
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
+        function addEmoji(e) { document.getElementById('msg-input').value += e; }
+
+        // ONLINE USERS & FRIEND SYSTEM
+        socket.on('updateOnlineList', (users) => {
+            const container = document.getElementById('online-users-container');
+            container.innerHTML = '';
+            users.forEach(u => {
+                if(u.username === currentUsername) return;
+                const item = document.createElement('div');
+                item.className = 'user-card';
+                item.innerHTML = `
+                    <span style="font-size:13px; font-weight:600;">🟢 ${u.username}</span>
+                    <button class="btn-req" onclick="sendFriendReq('${u.username}')">Add Friend</button>
+                `;
+                container.appendChild(item);
+            });
+        });
+
+        socket.on('userData', (data) => {
+            // Render Friends List
+            const fList = document.getElementById('friends-chat-list');
+            fList.innerHTML = '';
+            data.friends.forEach(f => {
+                const item = document.createElement('div');
+                item.className = 'chat-item';
+                item.onclick = () => selectChat(f, f);
+                item.innerHTML = `
+                    <div class="chat-avatar" style="width:36px; height:36px; font-size:14px;">${f.charAt(0).toUpperCase()}<div class="online-dot"></div></div>
+                    <div class="chat-meta"><div class="chat-title">${f}</div><div class="chat-msg-preview">Private Chat</div></div>
+                `;
+                fList.appendChild(item);
+            });
+
+            // Render Friend Requests
+            const rList = document.getElementById('requests-container');
+            rList.innerHTML = '';
+            data.requests.forEach(req => {
+                const div = document.createElement('div');
+                div.className = 'user-card';
+                div.innerHTML = `
+                    <span style="font-size:12px;"><b>${req}</b> wants to connect</span>
+                    <button class="btn-req" onclick="acceptReq('${req}')">Accept</button>
+                `;
+                rList.appendChild(div);
+            });
+        });
+
+        function sendFriendReq(target) {
+            socket.emit('sendFriendRequest', { sender: currentUsername, recipient: target });
+            alert('Friend request sent to ' + target);
         }
 
-        function toggleEmojiPicker() {
-            const p = document.getElementById('emoji-picker');
-            p.style.display = p.style.display === 'grid' ? 'none' : 'grid';
-        }
-
-        function addEmoji(e) {
-            document.getElementById('msg-input').value += e;
-            document.getElementById('emoji-picker').style.display = 'none';
-        }
-
-        function switchToPublicChat() {
-            document.getElementById('current-chat-title').innerText = "Public Tamil Chat Room";
-        }
-
-        function openGiftModal() {
-            alert("🎁 Select a gift (Rose 🌹, Chocolate 🍫, Crown 👑) to send to your friends!");
+        function acceptReq(senderName) {
+            socket.emit('acceptFriendRequest', { currentUser: currentUsername, friendName: senderName });
         }
     </script>
 </body>
