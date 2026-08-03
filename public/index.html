@@ -9,7 +9,9 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { height: 100vh; width: 100vw; overflow: hidden; background: #f8fafc; color: #1e293b; display: flex; }
 
-        /* EXACT PHOTO 2 LOGIN SCREEN STYLES */
+        /* ----------------------------------
+           1. LOGIN SCREEN STYLES (PHOTO 2)
+        ----------------------------------- */
         #login-screen {
             position: fixed; inset: 0; z-index: 9999;
             background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #dbeafe 100%);
@@ -90,43 +92,88 @@
 
         .bottom-lock { margin-top: 15px; font-size: 11px; color: #64748b; display: flex; align-items: center; gap: 6px; }
 
-        /* MAIN APP DASHBOARD */
-        #app { display: none; width: 100%; height: 100%; background: #f8fafc; }
+
+        /* ----------------------------------
+           2. MAIN APP DASHBOARD STYLES (PHOTO 1)
+        ----------------------------------- */
+        #app { display: none; width: 100vw; height: 100vh; background: #f8fafc; overflow: hidden; }
+
+        /* COLUMN 1: LEFT SIDEBAR */
         .sidebar-left { width: 320px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; flex-shrink: 0; }
         .brand-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand-logo { font-size: 20px; font-weight: 800; color: #4f46e5; display: flex; align-items: center; gap: 8px; }
         
-        .btn-new-chat { margin: 0 15px 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-new-chat { margin: 0 15px 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25); }
+
+        .search-box { margin: 0 15px 12px; background: #f1f5f9; border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; color: #94a3b8; }
+        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 13px; color: #334155; }
+
+        .chat-tabs { display: flex; padding: 0 15px; border-bottom: 1px solid #f1f5f9; gap: 15px; }
+        .tab-btn { padding: 8px 0; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: #4f46e5; border-bottom-color: #4f46e5; }
 
         .chat-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .chat-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; cursor: pointer; }
+        .chat-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; cursor: pointer; transition: background 0.2s; position: relative; }
         .chat-item:hover, .chat-item.active { background: #f1f5f9; }
         .chat-avatar { width: 42px; height: 42px; border-radius: 50%; background: #6366f1; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; flex-shrink: 0; position: relative; }
         .online-dot { width: 10px; height: 10px; background: #10b981; border: 2px solid white; border-radius: 50%; position: absolute; bottom: 0; right: 0; }
+        .chat-meta { flex: 1; overflow: hidden; }
+        .chat-title { font-weight: 700; font-size: 14px; color: #0f172a; display: flex; justify-content: space-between; }
+        .chat-msg-preview { font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 
+        .nav-bottom { height: 60px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-around; align-items: center; color: #64748b; font-size: 11px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+        .nav-item:hover { color: #4f46e5; }
+
+        /* COLUMN 2: MAIN CHAT PANEL */
         .main-chat { flex: 1; display: flex; flex-direction: column; background: #fafafa; border-right: 1px solid #e2e8f0; }
         .chat-top-bar { height: 65px; background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .active-user-info { display: flex; align-items: center; gap: 10px; }
+        .top-actions { display: flex; gap: 20px; color: #64748b; font-size: 13px; align-items: center; }
+        .top-action-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; font-size: 10px; font-weight: 600; }
+        .top-action-btn i { font-size: 16px; color: #4f46e5; }
+
         .chat-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; background: #f8fafc; }
-        
+        .time-divider { align-self: center; background: #e0e7ff; color: #4338ca; font-size: 11px; padding: 4px 12px; border-radius: 12px; font-weight: 600; margin: 10px 0; }
+
         .msg-left { display: flex; gap: 10px; max-width: 70%; align-self: flex-start; }
-        .msg-left .bubble { background: #ffffff; padding: 12px 16px; border-radius: 0 16px 16px 16px; border: 1px solid #f1f5f9; font-size: 14px; }
+        .msg-left .bubble { background: #ffffff; padding: 12px 16px; border-radius: 0 16px 16px 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; font-size: 14px; color: #1e293b; }
         
         .msg-right { display: flex; gap: 10px; max-width: 70%; align-self: flex-end; flex-direction: row-reverse; }
-        .msg-right .bubble { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 12px 16px; border-radius: 16px 0 16px 16px; font-size: 14px; }
+        .msg-right .bubble { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 12px 16px; border-radius: 16px 0 16px 16px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); font-size: 14px; }
+        
+        .msg-timestamp { font-size: 10px; opacity: 0.7; margin-left: 8px; float: right; margin-top: 4px; }
 
-        .chat-footer { background: #ffffff; padding: 12px 20px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; }
+        /* FOOTER INPUT WITH ALL ICONS */
+        .chat-footer { background: #ffffff; padding: 12px 20px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; position: relative; }
+        .footer-icons { display: flex; gap: 12px; color: #94a3b8; font-size: 18px; }
+        .footer-icons i { cursor: pointer; transition: color 0.2s; }
+        .footer-icons i:hover { color: #4f46e5; }
+        
         .input-wrapper { flex: 1; background: #f1f5f9; border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; }
-        .input-wrapper input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; }
-        .btn-send { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .input-wrapper input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: #1e293b; }
 
+        .btn-send { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }
+
+        /* COLUMN 3: RIGHT SIDEBAR */
         .sidebar-right { width: 280px; background: #ffffff; display: flex; flex-direction: column; padding: 20px; gap: 20px; flex-shrink: 0; }
+        .section-header { font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; align-items: center; color: #0f172a; }
+        
+        .online-users-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .user-card { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-radius: 8px; background: #f8fafc; }
         .btn-req { background: #4f46e5; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+
+        .gift-card { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #bbf7d0; border-radius: 16px; padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .gift-box-icon { font-size: 36px; color: #16a34a; }
+        .btn-send-gift { background: #16a34a; color: white; border: none; padding: 8px 20px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; }
+
+        #emoji-picker { position: absolute; bottom: 70px; left: 20px; background: white; border: 1px solid #ddd; border-radius: 12px; padding: 10px; display: none; grid-template-columns: repeat(6, 1fr); gap: 8px; font-size: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        #emoji-picker span { cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- PHOTO 2 EXACT DESIGN LOGIN SCREEN -->
+    <!-- 1. LOGIN SCREEN (PHOTO 2 EXACT DESIGN) -->
     <div id="login-screen">
         <div class="login-header">
             <div class="app-logo"><i class="fa-solid fa-comment-dots"></i></div>
@@ -140,7 +187,7 @@
 
             <div id="error-box" style="color: #ef4444; font-size: 12px; text-align: center; margin-bottom: 10px; font-weight: 600;"></div>
 
-            <!-- LOGIN FORM BOX -->
+            <!-- LOGIN FORM -->
             <div class="form-box">
                 <div class="box-header">
                     <div class="box-icon-purple"><i class="fa-regular fa-user"></i></div>
@@ -203,56 +250,116 @@
         </div>
     </div>
 
-    <!-- MAIN CHAT APP -->
+
+    <!-- 2. MAIN APP DASHBOARD (PHOTO 1 UI WITH ALL ICONS) -->
     <div id="app">
-        <!-- 1. LEFT SIDEBAR -->
+        <!-- COLUMN 1: LEFT SIDEBAR -->
         <div class="sidebar-left">
             <div class="brand-header">
                 <div class="brand-logo"><i class="fa-solid fa-comment-dots"></i> Perfect Chat</div>
+                <i class="fa-solid fa-bars" style="color:#94a3b8; cursor:pointer;"></i>
             </div>
 
             <button class="btn-new-chat" onclick="selectChat('public', 'Public Chat Room')">
-                <i class="fa-solid fa-globe"></i> Public Chat Room
+                <i class="fa-solid fa-plus"></i> Public Chat Room
             </button>
 
-            <div class="chat-list" id="friends-chat-list"></div>
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search users or chats">
+            </div>
 
-            <div style="padding: 15px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
-                <span id="my-user-display" style="font-weight: bold; font-size: 13px;">User</span>
-                <button onclick="logout()" style="background:#fee2e2; color:#dc2626; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:bold;">Logout</button>
+            <div class="chat-tabs">
+                <div class="tab-btn active">All Chats</div>
+                <div class="tab-btn">Groups</div>
+            </div>
+
+            <div class="chat-list" id="friends-chat-list">
+                <!-- Public Room Item -->
+                <div class="chat-item active" onclick="selectChat('public', 'Public Room')">
+                    <div class="chat-avatar" style="background:#4f46e5;"><i class="fa-solid fa-users"></i></div>
+                    <div class="chat-meta">
+                        <div class="chat-title">Public Room <span style="font-size:10px; color:#10b981;">Live</span></div>
+                        <div class="chat-msg-preview">Global chat room</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-bottom">
+                <div class="nav-item"><i class="fa-regular fa-address-book" style="font-size:16px;"></i> Contacts</div>
+                <div class="nav-item"><i class="fa-solid fa-phone" style="font-size:16px;"></i> Calls</div>
+                <div class="nav-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket" style="font-size:16px; color:#ef4444;"></i> Logout</div>
             </div>
         </div>
 
-        <!-- 2. MAIN CHAT PANEL -->
+        <!-- COLUMN 2: MAIN CHAT -->
         <div class="main-chat">
+            <!-- TOP BAR WITH ICONS -->
             <div class="chat-top-bar">
-                <div style="display:flex; align-items:center; gap:10px;">
+                <div class="active-user-info">
                     <div class="chat-avatar" id="current-chat-avatar">P</div>
                     <div>
                         <div style="font-weight:700; font-size:15px;" id="current-chat-title">Public Room</div>
                         <div style="font-size:11px; color:#10b981;">● Online</div>
                     </div>
                 </div>
-                <button onclick="location.reload()" style="border:none; background:none; cursor:pointer; font-size:16px; color:#64748b;"><i class="fa-solid fa-rotate"></i></button>
+
+                <div class="top-actions">
+                    <div class="top-action-btn" onclick="openGiftModal()"><i class="fa-solid fa-gift"></i> Gift</div>
+                    <div class="top-action-btn" onclick="location.reload()"><i class="fa-solid fa-rotate"></i> Refresh</div>
+                    <div class="top-action-btn" onclick="alert('Private Messaging Active')"><i class="fa-solid fa-lock"></i> Private</div>
+                    <div class="top-action-btn"><i class="fa-regular fa-bell"></i> Notifications</div>
+                </div>
             </div>
 
-            <div class="chat-body" id="messages-list"></div>
+            <!-- CHAT BODY -->
+            <div class="chat-body" id="messages-list">
+                <div class="time-divider">Today</div>
+            </div>
 
+            <!-- FOOTER INPUT WITH ALL PHOTO 1 ICONS -->
             <div class="chat-footer">
+                <div id="emoji-picker">
+                    <span onclick="addEmoji('😀')">😀</span><span onclick="addEmoji('😂')">😂</span>
+                    <span onclick="addEmoji('😍')">😍</span><span onclick="addEmoji('👍')">👍</span>
+                    <span onclick="addEmoji('❤️')">❤️</span><span onclick="addEmoji('🔥')">🔥</span>
+                </div>
+
+                <div class="footer-icons">
+                    <i class="fa-regular fa-face-smile" onclick="toggleEmojiPicker()" title="Emoji"></i>
+                    <i class="fa-solid fa-paperclip" onclick="alert('Attach file')" title="Attach File"></i>
+                    <i class="fa-regular fa-image" onclick="alert('Attach image')" title="Image"></i>
+                    <i class="fa-solid fa-video" style="color:#10b981;" onclick="alert('Starting Video Call...')" title="Video Call"></i>
+                </div>
+
                 <div class="input-wrapper">
                     <input type="text" id="msg-input" placeholder="Type a message..." onkeypress="handleKey(event)"/>
                 </div>
+
+                <i class="fa-solid fa-microphone" style="color:#94a3b8; font-size:18px; cursor:pointer;" onclick="alert('Recording voice...')" title="Voice Mic"></i>
                 <button class="btn-send" onclick="sendText()"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
 
-        <!-- 3. RIGHT SIDEBAR -->
+        <!-- COLUMN 3: RIGHT SIDEBAR -->
         <div class="sidebar-right">
-            <div style="font-weight:bold; font-size:14px;">Friend Requests</div>
+            <div class="section-header">
+                <span>Friend Requests</span>
+            </div>
             <div id="requests-container"></div>
 
-            <div style="font-weight:bold; font-size:14px; margin-top:15px;">Online Users</div>
-            <div id="online-users-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+            <div class="section-header" style="margin-top:10px;">
+                <span>● Online Users</span>
+                <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8; cursor:pointer;"></i>
+            </div>
+            <div class="online-users-list" id="online-users-container"></div>
+
+            <!-- GIFT WIDGET -->
+            <div class="gift-card">
+                <div class="gift-box-icon">🎁</div>
+                <div style="font-weight:700; font-size:13px; color:#15803d;">Send Gifts to friends!</div>
+                <button class="btn-send-gift" onclick="openGiftModal()">Send Gift</button>
+            </div>
         </div>
     </div>
 
@@ -292,7 +399,6 @@
             localStorage.setItem('ftc_username', myUsername);
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
-            document.getElementById('my-user-display').innerText = myUsername;
             selectChat('public', 'Public Chat Room');
         });
 
@@ -310,7 +416,7 @@
 
         socket.on('chatHistory', (history) => {
             const list = document.getElementById('messages-list');
-            list.innerHTML = '';
+            list.innerHTML = '<div class="time-divider">Today</div>';
             history.forEach(data => appendMessage(data));
         });
 
@@ -331,7 +437,7 @@
                 <div class="bubble">
                     <div style="font-size:10px; font-weight:bold; margin-bottom:2px; opacity:0.8;">${data.sender}</div>
                     <div>${data.content}</div>
-                    <span style="font-size:9px; opacity:0.6; float:right; margin-top:4px;">${data.time || ''}</span>
+                    <span class="msg-timestamp">${data.time || ''} ${isMe ? '✓✓' : ''}</span>
                 </div>
             `;
             list.appendChild(rowDiv);
@@ -354,6 +460,21 @@
                 time: timeStr
             });
             input.value = '';
+            document.getElementById('emoji-picker').style.display = 'none';
+        }
+
+        function toggleEmojiPicker() {
+            const p = document.getElementById('emoji-picker');
+            p.style.display = p.style.display === 'grid' ? 'none' : 'grid';
+        }
+
+        function addEmoji(e) {
+            document.getElementById('msg-input').value += e;
+            document.getElementById('emoji-picker').style.display = 'none';
+        }
+
+        function openGiftModal() {
+            alert("🎁 Select a gift (Rose 🌹, Crown 👑) to send to your friends!");
         }
 
         socket.on('updateOnlineList', (users) => {
@@ -373,7 +494,15 @@
 
         socket.on('userData', (data) => {
             const fList = document.getElementById('friends-chat-list');
-            fList.innerHTML = '';
+            fList.innerHTML = `
+                <div class="chat-item active" onclick="selectChat('public', 'Public Room')">
+                    <div class="chat-avatar" style="background:#4f46e5;"><i class="fa-solid fa-users"></i></div>
+                    <div class="chat-meta">
+                        <div class="chat-title">Public Room <span style="font-size:10px; color:#10b981;">Live</span></div>
+                        <div class="chat-msg-preview">Global chat room</div>
+                    </div>
+                </div>
+            `;
             data.friends.forEach(f => {
                 const item = document.createElement('div');
                 item.className = 'chat-item';
@@ -384,11 +513,27 @@
                 `;
                 fList.appendChild(item);
             });
+
+            const rList = document.getElementById('requests-container');
+            rList.innerHTML = '';
+            data.requests.forEach(req => {
+                const div = document.createElement('div');
+                div.className = 'user-card';
+                div.innerHTML = `
+                    <span style="font-size:11px;"><b>${req}</b></span>
+                    <button class="btn-req" onclick="acceptReq('${req}')">Accept</button>
+                `;
+                rList.appendChild(div);
+            });
         });
 
         function sendFriendReq(target) {
             socket.emit('sendFriendRequest', { sender: myUsername, recipient: target });
             alert('Friend request sent to ' + target);
+        }
+
+        function acceptReq(senderName) {
+            socket.emit('acceptFriendRequest', { currentUser: myUsername, friendName: senderName });
         }
     </script>
 </body>
