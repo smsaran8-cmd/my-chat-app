@@ -3,206 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Friends Tamil Chat</title>
+    <title>Perfect Chat</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        html, body { height: 100%; width: 100%; background: #18191a; color: #333; overflow: hidden; position: fixed; }
+        html, body { height: 100%; width: 100%; overflow: hidden; position: fixed; }
 
-        /* LANDING & LOGIN */
-        #landing-page { position: fixed; inset: 0; z-index: 2000; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; color: white; }
-        .hero-title { font-size: 28px; font-weight: bold; margin: 15px 0 8px; }
-        .btn-green { background: #76b01e; color: white; border: none; padding: 12px 40px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        /* MODERN LOGIN PAGE UI */
+        #login-screen {
+            position: fixed; inset: 0; z-index: 5000;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #dbeafe 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; overflow-y: auto;
+        }
 
-        #login-modal { position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-box { background: white; color: #333; width: 100%; max-width: 340px; border-radius: 8px; padding: 20px; position: relative; }
-        .modal-input { width: 100%; padding: 12px; background: #f0f2f5; border: 1px solid #ddd; border-radius: 4px; font-size: 15px; margin-bottom: 12px; outline: none; }
-        .btn-cyan { width: 100%; background: #00a8e8; color: white; border: none; padding: 12px; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .login-header { text-align: center; margin-bottom: 20px; }
+        .app-logo {
+            width: 60px; height: 60px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px; color: white; font-size: 26px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+        .app-title { font-size: 32px; font-weight: 800; color: #1e1b4b; }
+        .app-subtitle { color: #64748b; font-size: 14px; margin-top: 4px; }
 
-        /* MAIN CHAT LAYOUT */
-        #chat-container { display: flex; flex-direction: column; height: 100%; width: 100%; background: #eef2f5; position: absolute; inset: 0; }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px; padding: 30px 25px;
+            width: 100%; max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .welcome-title { font-size: 20px; font-weight: 700; text-align: center; color: #0f172a; }
+        .welcome-sub { font-size: 13px; text-align: center; color: #64748b; margin-bottom: 20px; }
+
+        .form-box {
+            background: #ffffff; border: 1px solid #f1f5f9;
+            border-radius: 16px; padding: 18px; margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .box-header { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #1e293b; font-size: 14px; margin-bottom: 12px; }
+        .box-icon-purple { background: #f3e8ff; color: #8b5cf6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+
+        .input-group {
+            position: relative; margin-bottom: 10px; display: flex; align-items: center;
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0 12px;
+        }
+        .input-group i { color: #94a3b8; font-size: 14px; }
+        .input-group input {
+            width: 100%; border: none; background: transparent; padding: 12px;
+            outline: none; font-size: 14px; color: #334155;
+        }
         
+        .forgot-link { display: block; text-align: right; font-size: 12px; color: #6366f1; text-decoration: none; margin-bottom: 15px; font-weight: 600; }
+
+        .btn-purple {
+            width: 100%; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border: none; padding: 12px; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
+        }
+
+        .divider { display: flex; align-items: center; text-align: center; color: #94a3b8; font-size: 11px; margin: 15px 0; font-weight: 600; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
+        .divider span { padding: 0 10px; }
+
+        .option-card {
+            background: #ffffff; border: 1px solid #f1f5f9; border-radius: 16px;
+            padding: 14px; display: flex; align-items: center; gap: 12px;
+            margin-bottom: 12px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .box-icon-blue { background: #e0f2fe; color: #0284c7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .box-icon-green { background: #dcfce7; color: #16a34a; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+        .option-title { font-weight: 700; font-size: 14px; color: #0f172a; }
+        .option-desc { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+        .feature-footer { display: flex; justify-content: space-between; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px; text-align: left; }
+        .feature-item { flex: 1; display: flex; align-items: flex-start; gap: 8px; }
+        .feature-item i { font-size: 14px; color: #8b5cf6; background: #f3e8ff; padding: 6px; border-radius: 6px; }
+        .feature-text b { display: block; font-size: 11px; color: #1e293b; }
+        .feature-text span { font-size: 9px; color: #64748b; line-height: 1.1; display: block; }
+
+        .bottom-lock { margin-top: 15px; font-size: 11px; color: #64748b; display: flex; align-items: center; gap: 6px; }
+
+        /* MAIN CHAT SCREEN (Retained) */
+        #chat-container { display: flex; flex-direction: column; height: 100%; width: 100%; background: #eef2f5; position: absolute; inset: 0; }
         .top-navbar { background: #242526; color: white; height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; flex-shrink: 0; z-index: 100; }
         .nav-right { display: flex; align-items: center; gap: 16px; font-size: 18px; }
-        .nav-icon { cursor: pointer; position: relative; }
-
-        .topic-bar { background: #e8f5e9; color: #2e7d32; padding: 8px 15px; font-size: 13px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #c8e6c9; flex-shrink: 0; }
-
-        /* MESSAGES LIST & ALIGNMENT */
+        .topic-bar { background: #e8f5e9; color: #2e7d32; padding: 8px 15px; font-size: 13px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #c8e6c9; }
         #messages-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: #f4f6f8; }
-
-        /* SYSTEM ALERT (User joined) */
-        .system-msg { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: #555; background: #e9ecef; padding: 6px 16px; border-radius: 20px; width: fit-content; align-self: center; margin: 4px 0; border: 1px solid #dee2e6; }
-        .system-msg i { font-size: 16px; color: #111; }
-
-        /* LEFT SIDE (OTHER USERS) MESSAGE */
+        .system-msg { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: #555; background: #e9ecef; padding: 6px 16px; border-radius: 20px; width: fit-content; align-self: center; border: 1px solid #dee2e6; }
         .msg-row-left { display: flex; gap: 10px; align-items: flex-start; max-width: 85%; align-self: flex-start; }
         .msg-row-left .msg-card { background: #ffffff; border-radius: 0px 12px 12px 12px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-
-        /* RIGHT SIDE (MY MESSAGES) */
         .msg-row-right { display: flex; gap: 10px; align-items: flex-start; max-width: 85%; align-self: flex-end; flex-direction: row-reverse; }
         .msg-row-right .msg-card { background: #dcf8c6; border-radius: 12px 0px 12px 12px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); border: 1px solid #c5e1a5; }
-
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #00a8e8; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 15px; flex-shrink: 0; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #6366f1; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 15px; flex-shrink: 0; }
         .msg-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 2px; }
-        .msg-sender { font-weight: bold; color: #e91e63; font-size: 13px; cursor: pointer; }
+        .msg-sender { font-weight: bold; color: #e91e63; font-size: 13px; }
         .msg-time { color: #888; font-size: 10px; }
         .msg-text { font-size: 14px; color: #111; line-height: 1.4; word-break: break-word; }
-        .msg-text img { max-width: 220px; border-radius: 8px; margin-top: 5px; display: block; }
+        
+        /* BOTTOM INPUT */
+        .bottom-bar { padding: 8px 10px; background: #ffffff; border-top: 1px solid #e4e6eb; display: flex; align-items: center; gap: 6px; position: relative; }
+        .chat-input { flex: 1; background: #f0f2f5; border: 1px solid #ddd; padding: 10px 14px; border-radius: 20px; font-size: 15px; outline: none; }
+        .icon-btn, .send-btn { font-size: 20px; color: #65676b; cursor: pointer; border: none; background: transparent; padding: 6px; }
 
-        /* RIGHT ONLINE USERS DRAWER */
+        /* DRAWER & MODAL */
         #online-drawer { position: fixed; top: 0; right: -310px; width: 300px; height: 100%; background: white; z-index: 1000; transition: right 0.3s ease; box-shadow: -2px 0 10px rgba(0,0,0,0.15); display: flex; flex-direction: column; }
         #online-drawer.open { right: 0; }
         .drawer-top { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-
-        /* STORIES BAR inside Online Drawer */
-        .stories-container { padding: 10px; border-bottom: 1px solid #eee; display: flex; gap: 12px; overflow-x: auto; background: #fff; }
-        .story-item { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; cursor: pointer; }
-        .story-ring { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #e91e63; padding: 2px; }
-        .story-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-
         .online-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .user-item { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .user-item { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 8px; cursor: pointer; }
         .user-item:hover { background: #f0f2f5; }
-        .user-info { flex: 1; }
-        .user-name { font-weight: bold; font-size: 14px; color: #333; }
-        .user-status { font-size: 11px; color: #777; }
-        .user-level { background: #e91e63; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
-
-        /* USER PROFILE POPUP (Friend Request & Private Msg) */
-        #user-profile-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .profile-modal-box { background: white; width: 100%; max-width: 320px; border-radius: 12px; padding: 20px; text-align: center; }
-
-        /* BOTTOM BAR & EMOJI */
-        .bottom-bar { padding: 8px 10px; background: #ffffff; border-top: 1px solid #e4e6eb; display: flex; align-items: center; gap: 6px; flex-shrink: 0; position: relative; }
-        .chat-input { flex: 1; background: #f0f2f5; border: 1px solid #ddd; padding: 10px 14px; border-radius: 20px; font-size: 15px; outline: none; }
-        .icon-btn { font-size: 20px; color: #65676b; cursor: pointer; border: none; background: transparent; padding: 6px; }
-        .send-btn { font-size: 20px; color: #00a8e8; cursor: pointer; border: none; background: transparent; padding: 6px; }
-
-        #emoji-picker { position: absolute; bottom: 60px; left: 10px; background: white; border: 1px solid #ddd; border-radius: 10px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; grid-template-columns: repeat(6, 1fr); gap: 8px; font-size: 22px; max-height: 180px; overflow-y: auto; z-index: 1000; }
-        #emoji-picker span { cursor: pointer; text-align: center; }
-
-        /* VIDEO CALL MODAL */
-        #video-modal { position: fixed; inset: 0; background: #111; z-index: 4000; display: none; flex-direction: column; justify-content: space-between; padding: 15px; }
-        .grid-video { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; flex: 1; align-items: center; justify-content: center; }
-        .video-box { background: #222; border-radius: 10px; height: 180px; width: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
-    <!-- LANDING PAGE -->
-    <div id="landing-page">
-        <div style="font-size: 50px;">🎉</div>
-        <div class="hero-title">Welcome To Friends Tamil Chat</div>
-        <p style="margin-bottom: 20px; color:#ccc;">Meet new Tamil friends, video call & chat!</p>
-        <button class="btn-green" onclick="openLogin()">Login to Chat</button>
-    </div>
+    <!-- MODERN LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="login-header">
+            <div class="app-logo"><i class="fa-solid fa-comment-dots"></i></div>
+            <div class="app-title">Perfect Chat</div>
+            <div class="app-subtitle">Connect. Chat. Share.</div>
+        </div>
 
-    <!-- LOGIN MODAL -->
-    <div id="login-modal">
-        <div class="modal-box">
-            <h3 style="margin-bottom: 15px;">Guest Login</h3>
-            <input type="text" id="username-input" class="modal-input" placeholder="Enter Username..." />
-            <button class="btn-cyan" onclick="startApp()">Start Chatting</button>
+        <div class="login-card">
+            <div class="welcome-title">Welcome Back!</div>
+            <div class="welcome-sub">Login to continue chatting with your friends</div>
+
+            <!-- LOGIN FORM BOX -->
+            <div class="form-box">
+                <div class="box-header">
+                    <div class="box-icon-purple"><i class="fa-regular fa-user"></i></div>
+                    Login to your account
+                </div>
+                <div class="input-group">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="username-input" placeholder="Enter your username">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password-input" placeholder="Enter your password">
+                    <i class="fa-regular fa-eye" style="cursor:pointer;"></i>
+                </div>
+                <a href="#" class="forgot-link">Forgot password?</a>
+                <button class="btn-purple" onclick="handleAccountLogin()">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+                </button>
+            </div>
+
+            <div class="divider"><span>OR</span></div>
+
+            <!-- CONTINUE AS GUEST -->
+            <div class="option-card" onclick="handleGuestLogin()">
+                <div class="box-icon-blue"><i class="fa-regular fa-user"></i></div>
+                <div style="flex:1;">
+                    <div class="option-title">Continue as Guest</div>
+                    <div class="option-desc">Start chatting instantly without creating an account</div>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:14px;"></i>
+            </div>
+
+            <!-- REGISTER -->
+            <div class="option-card" onclick="handleRegister()">
+                <div class="box-icon-green"><i class="fa-solid fa-user-plus"></i></div>
+                <div style="flex:1;">
+                    <div class="option-title">Register</div>
+                    <div class="option-desc">Create a new account to get started</div>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:14px;"></i>
+            </div>
+
+            <!-- FOOTER FEATURES -->
+            <div class="feature-footer">
+                <div class="feature-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div class="feature-text">
+                        <b>Secure & Private</b>
+                        <span>Encrypted chats</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fa-regular fa-comments"></i>
+                    <div class="feature-text">
+                        <b>Real-time</b>
+                        <span>Instant delivery</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fa-solid fa-user-group"></i>
+                    <div class="feature-text">
+                        <b>Stay Connected</b>
+                        <span>Chat anytime</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-lock">
+            <i class="fa-solid fa-lock"></i> Your conversations are safe and private
         </div>
     </div>
 
     <!-- MAIN CHAT SCREEN -->
     <div id="chat-container">
-        <!-- TOP NAVBAR -->
         <div class="top-navbar">
-            <i class="fa-solid fa-bars nav-icon"></i>
+            <i class="fa-solid fa-bars" style="cursor:pointer;"></i>
             <div style="font-weight: bold; font-size: 16px;">Friends Tamil Chat</div>
             <div class="nav-right">
-                <i class="fa-solid fa-gift nav-icon" style="color: #ff4757;"></i>
-                <i class="fa-solid fa-rotate nav-icon" onclick="location.reload()"></i>
-                <i class="fa-solid fa-envelope nav-icon"></i>
-                <i class="fa-solid fa-users nav-icon" style="color:#00a8e8;" onclick="toggleOnlineDrawer()"></i>
+                <i class="fa-solid fa-rotate" style="cursor:pointer;" onclick="location.reload()"></i>
+                <i class="fa-solid fa-users" style="color:#00a8e8; cursor:pointer;" onclick="toggleOnlineDrawer()"></i>
             </div>
         </div>
 
-        <!-- TOPIC BAR -->
         <div class="topic-bar">
-            <i class="fa-solid fa-circle-exclamation" style="color: #ffb142; font-size: 16px;"></i>
+            <i class="fa-solid fa-circle-exclamation" style="color: #ffb142;"></i>
             <div><b>Topic:</b> Welcome to Friends Tamil Chat! 🎈</div>
         </div>
 
-        <!-- MESSAGES AREA -->
         <div id="messages-list"></div>
 
-        <!-- BOTTOM INPUT BAR -->
         <div class="bottom-bar">
-            <div id="emoji-picker">
-                <span onclick="addEmoji('😀')">😀</span><span onclick="addEmoji('😂')">😂</span>
-                <span onclick="addEmoji('😍')">😍</span><span onclick="addEmoji('😎')">😎</span>
-                <span onclick="addEmoji('👍')">👍</span><span onclick="addEmoji('❤️')">❤️</span>
-                <span onclick="addEmoji('🔥')">🔥</span><span onclick="addEmoji('🎉')">🎉</span>
-            </div>
-
-            <button class="icon-btn" onclick="toggleEmojiPicker()"><i class="fa-regular fa-face-smile"></i></button>
-            <button class="icon-btn" onclick="document.getElementById('img-file').click()"><i class="fa-solid fa-camera"></i></button>
-            <input type="file" id="img-file" accept="image/*" style="display:none" onchange="sendImage(this)"/>
-
-            <button class="icon-btn" style="color:#2ed573;" onclick="startGroupVideoCall()"><i class="fa-solid fa-video"></i></button>
-
             <input type="text" id="msg-input" class="chat-input" placeholder="Type here..." onkeypress="handleKey(event)"/>
-            <button class="send-btn" onclick="sendText()"><i class="fa-solid fa-paper-plane"></i></button>
+            <button class="send-btn" style="color:#6366f1;" onclick="sendText()"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 
-    <!-- RIGHT ONLINE USERS DRAWER -->
+    <!-- ONLINE USERS DRAWER -->
     <div id="online-drawer">
         <div class="drawer-top">
             <b id="online-count-title">Online 0</b>
             <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="toggleOnlineDrawer()"></i>
         </div>
-
-        <!-- STORIES BAR -->
-        <div class="stories-container">
-            <div class="story-item">
-                <div class="story-ring"><img src="https://i.pravatar.cc/100?img=3" alt="Story"/></div>
-                <span style="font-size:10px;">DraKieE</span>
-            </div>
-            <div class="story-item">
-                <div class="story-ring"><img src="https://i.pravatar.cc/100?img=5" alt="Story"/></div>
-                <span style="font-size:10px;">Thooriga</span>
-            </div>
-        </div>
-
-        <!-- USERS LIST -->
         <div id="online-users-list" class="online-list"></div>
-    </div>
-
-    <!-- USER PROFILE ACTION MODAL -->
-    <div id="user-profile-modal">
-        <div class="profile-modal-box">
-            <div class="avatar" id="pm-avatar" style="width:60px; height:60px; font-size:24px; margin:0 auto 10px;">U</div>
-            <h3 id="pm-username">Username</h3>
-            <p id="pm-status" style="font-size:12px; color:#666; margin-bottom:15px;">Status line</p>
-            
-            <button class="btn-cyan" style="margin-bottom:8px;" onclick="sendFriendRequest()"><i class="fa-solid fa-user-plus"></i> Send Friend Request</button>
-            <button class="btn-green" style="width:100%;" onclick="openPrivateChat()"><i class="fa-solid fa-comments"></i> Private Message (PM)</button>
-            <button style="width:100%; margin-top:8px; border:none; background:#eee; padding:10px; border-radius:4px; cursor:pointer;" onclick="closeProfileModal()">Cancel</button>
-        </div>
-    </div>
-
-    <!-- GROUP VIDEO CALL MODAL -->
-    <div id="video-modal">
-        <div style="color:white; display:flex; justify-content:space-between; align-items:center;">
-            <b>Group Video Call Room</b>
-            <button style="background:#ff4757; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;" onclick="endVideoCall()">Leave Call</button>
-        </div>
-        <div class="grid-video">
-            <video id="myLocalVideo" class="video-box" autoplay playsinline muted></video>
-        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
         let myUsername = "";
-        let selectedUser = null;
-        let localStream = null;
 
         window.onload = function() {
             const savedName = localStorage.getItem('ftc_username');
@@ -212,36 +255,45 @@
             }
         };
 
-        function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
-        
-        function startApp() {
-            const name = document.getElementById('username-input').value.trim();
-            if (!name) { alert('Enter name!'); return; }
-            myUsername = name;
-            localStorage.setItem('ftc_username', name);
+        function handleAccountLogin() {
+            const input = document.getElementById('username-input').value.trim();
+            if(!input) { alert('Please enter a username!'); return; }
+            myUsername = input;
+            localStorage.setItem('ftc_username', input);
             enterChatScreen();
         }
 
+        function handleGuestLogin() {
+            const guestName = "Guest_" + Math.floor(Math.random() * 8999 + 1000);
+            myUsername = guestName;
+            localStorage.setItem('ftc_username', guestName);
+            enterChatScreen();
+        }
+
+        function handleRegister() {
+            const newName = prompt("Enter username for new account:");
+            if(newName) {
+                myUsername = newName.trim();
+                localStorage.setItem('ftc_username', myUsername);
+                enterChatScreen();
+            }
+        }
+
         function enterChatScreen() {
-            document.getElementById('landing-page').style.display = 'none';
-            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'none';
             socket.emit('registerUser', myUsername);
         }
 
-        /* 1. LOAD HISTORY */
         socket.on('loadHistory', (history) => {
             const list = document.getElementById('messages-list');
             list.innerHTML = '';
             history.forEach(data => appendMessage(data));
         });
 
-        /* 2. RECEIVE MESSAGES */
         socket.on('receiveGlobalMessage', (data) => appendMessage(data));
 
         function appendMessage(data) {
             const list = document.getElementById('messages-list');
-
-            // System Message (User Join/Leave Notification)
             if (data.type === 'system') {
                 const sysDiv = document.createElement('div');
                 sysDiv.className = 'system-msg';
@@ -251,8 +303,6 @@
                 const isMe = data.sender === myUsername;
                 const rowDiv = document.createElement('div');
                 rowDiv.className = isMe ? 'msg-row-right' : 'msg-row-left';
-
-                let bodyHtml = data.type === 'image' ? `<img src="${data.content}" />` : `<div>${data.content}</div>`;
                 const avatarLetter = data.sender ? data.sender.charAt(0).toUpperCase() : 'U';
 
                 rowDiv.innerHTML = `
@@ -262,7 +312,7 @@
                             <span class="msg-sender">${data.sender}</span>
                             <span class="msg-time">${data.time || ''}</span>
                         </div>
-                        <div class="msg-text">${bodyHtml}</div>
+                        <div class="msg-text">${data.content}</div>
                     </div>
                 `;
                 list.appendChild(rowDiv);
@@ -270,107 +320,30 @@
             list.scrollTop = list.scrollHeight;
         }
 
-        /* 3. ONLINE USERS LIST */
-        function toggleOnlineDrawer() {
-            document.getElementById('online-drawer').classList.toggle('open');
-        }
+        function toggleOnlineDrawer() { document.getElementById('online-drawer').classList.toggle('open'); }
 
         socket.on('updateOnlineList', (users) => {
             document.getElementById('online-count-title').innerText = `Online ${users.length}`;
             const container = document.getElementById('online-users-list');
             container.innerHTML = '';
-
             users.forEach(user => {
                 const item = document.createElement('div');
                 item.className = 'user-item';
-                item.onclick = () => openUserProfile(user);
-                
                 item.innerHTML = `
                     <div class="avatar" style="width:32px; height:32px; font-size:13px;">${user.username.charAt(0).toUpperCase()}</div>
-                    <div class="user-info">
-                        <div class="user-name">${user.username}</div>
-                        <div class="user-status">${user.status}</div>
-                    </div>
-                    <span class="user-level">Lv. ${user.level}</span>
+                    <div><b>${user.username}</b></div>
                 `;
                 container.appendChild(item);
             });
         });
 
-        /* 4. USER PROFILE MODAL (FRIEND REQUEST & PRIVATE MSG) */
-        function openUserProfile(user) {
-            selectedUser = user;
-            document.getElementById('pm-username').innerText = user.username;
-            document.getElementById('pm-avatar').innerText = user.username.charAt(0).toUpperCase();
-            document.getElementById('pm-status').innerText = user.status;
-            document.getElementById('user-profile-modal').style.display = 'flex';
-        }
-
-        function closeProfileModal() { document.getElementById('user-profile-modal').style.display = 'none'; }
-
-        function sendFriendRequest() {
-            alert(`Friend Request sent to ${selectedUser.username}!`);
-            closeProfileModal();
-        }
-
-        function openPrivateChat() {
-            const msg = prompt(`Send Private Message to ${selectedUser.username}:`);
-            if (msg) {
-                socket.emit('sendPrivateMsg', { targetSocketId: selectedUser.id, content: msg });
-                alert('Private message sent!');
-            }
-            closeProfileModal();
-        }
-
-        socket.on('receivePrivateMsg', (data) => {
-            alert(`📩 PRIVATE MSG from ${data.sender}:\n\n${data.content}`);
-        });
-
-        /* EMOJI & MESSAGING */
-        function toggleEmojiPicker() {
-            const p = document.getElementById('emoji-picker');
-            p.style.display = p.style.display === 'grid' ? 'none' : 'grid';
-        }
-        function addEmoji(e) {
-            document.getElementById('msg-input').value += e;
-            document.getElementById('emoji-picker').style.display = 'none';
-        }
         function handleKey(e) { if (e.key === 'Enter') sendText(); }
-
         function sendText() {
             const input = document.getElementById('msg-input');
             const text = input.value.trim();
             if (!text) return;
-            socket.emit('globalMessage', { sender: myUsername || 'Guest', type: 'text', content: text });
+            socket.emit('globalMessage', { sender: myUsername, type: 'text', content: text });
             input.value = '';
-            document.getElementById('emoji-picker').style.display = 'none';
-        }
-
-        function sendImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    socket.emit('globalMessage', { sender: myUsername || 'Guest', type: 'image', content: e.target.result });
-                }
-                reader.readAsDataURL(input.files[0]);
-                input.value = '';
-            }
-        }
-
-        /* 5. GROUP VIDEO CALL */
-        async function startGroupVideoCall() {
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('myLocalVideo').srcObject = localStream;
-                document.getElementById('video-modal').style.display = 'flex';
-            } catch (err) {
-                alert('Camera permission denied or not available!');
-            }
-        }
-
-        function endVideoCall() {
-            if (localStream) localStream.getTracks().forEach(track => track.stop());
-            document.getElementById('video-modal').style.display = 'none';
         }
     </script>
 </body>
