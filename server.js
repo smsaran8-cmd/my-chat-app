@@ -11,133 +11,164 @@ const io = new Server(server);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-// MongoDB Connection (Fallback to in-memory if URI not provided)
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://demo:demo123@cluster0.mongodb.net/perfectchat?retryWrites=true&w=majority";
+// Local / Fallback Mongo setup
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/perfectchat";
+let isDbConnected = false;
 
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("📦 Connected to MongoDB successfully"))
-    .catch(err => console.log("⚠️ MongoDB connection error, using fallback or check URI:", err.message));
+mongoose.connect(MONGO_URI)
+    .then(() => {
+        isDbConnected = true;
+        console.log("📦 Connected to MongoDB successfully");
+    })
+    .catch(err => {
+        console.log("⚠️ Running without MongoDB (In-Memory Fallback Active):", err.message);
+    });
 
 // Schemas
 const userSchema = new mongoose.Schema({
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     friends: [String],
-    requests: [String] // Incoming friend requests
+    requests: [String]
 });
-const User = mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 const messageSchema = new mongoose.Schema({
     sender: String,
-    recipient: { type: String, default: 'public' }, // 'public' or specific username for private chat
+    recipient: { type: String, default: 'public' },
     type: String,
     content: String,
     time: String,
     timestamp: { type: Date, default: Date.now }
 });
-const Message = mongoose.model('Message', messageSchema);
+const Message = mongoose.models.Message || mongoose.model('Message', messageSchema);
 
-let onlineUsers = {}; // socket.id -> username
+// In-Memory Backup
+let memoryUsers = {};
+let memoryMessages = [];
+let onlineUsers = {};
 
 io.on('connection', (socket) => {
     console.log('⚡ User connected:', socket.id);
 
-    // Register User session
-    socket.on('loginUser', async ({ username, password, isRegister }) => {
+    // LOGIN / REGISTER / GUEST LOGIN
+    socket.on('loginUser', async ({ username, password, isRegister, isGuest }) => {
         try {
-            let user = await User.findOne({ username });
-            if (isRegister) {
-                if (user) {
-                    socket.emit('authError', 'Username already exists!');
-                    return;
+            if (isGuest) {
+                const guestName = username || ("Guest_" + Math.floor(Math.random() * 8999 + 1000));
+                onlineUsers[socket.id] = guestName;
+                socket.join(guestName);
+                socket.emit('authSuccess', { username: guestName, isGuest: true });
+                broadcastOnlineUsers();
+                sendUserData(socket, guestName);
+                return;
+            }
+
+            if (isDbConnected) {
+                let user = await User.findOne({ username });
+                if (isRegister) {
+                    if (user) return socket.emit('authError', 'Username already exists!');
+                    user = new User({ username, password, friends: [], requests: [] });
+                    await user.save();
+                } else {
+                    if (!user || user.password !== password) {
+                        return socket.emit('authError', 'Invalid username or password!');
+                    }
                 }
-                user = new User({ username, password, friends: [], requests: [] });
-                await user.save();
             } else {
-                if (!user || user.password !== password) {
-                    socket.emit('authError', 'Invalid username or password!');
-                    return;
+                // In-Memory fallback if DB is not available
+                if (isRegister) {
+                    if (memoryUsers[username]) return socket.emit('authError', 'Username already exists!');
+                    memoryUsers[username] = { password, friends: [], requests: [] };
+                } else {
+                    if (!memoryUsers[username] || memoryUsers[username].password !== password) {
+                        return socket.emit('authError', 'Invalid username or password!');
+                    }
                 }
             }
 
             onlineUsers[socket.id] = username;
-            socket.join(username); // Personal room for private notifications
-            
-            socket.emit('authSuccess', username);
+            socket.join(username);
+            socket.emit('authSuccess', { username, isGuest: false });
             broadcastOnlineUsers();
             sendUserData(socket, username);
         } catch (e) {
-            socket.emit('authError', 'Server error during authentication.');
+            console.log("Auth Error:", e);
+            socket.emit('authError', 'Authentication failed. Try Continuing as Guest!');
         }
     });
 
-    // Load Chat History (Public or Private)
+    // LOAD HISTORY
     socket.on('loadHistory', async ({ currentUser, targetUser }) => {
         try {
-            let query = targetUser === 'public' 
-                ? { recipient: 'public' }
-                : { $or: [
-                    { sender: currentUser, recipient: targetUser },
-                    { sender: targetUser, recipient: currentUser }
-                  ]};
-            
-            const history = await Message.find(query).sort({ timestamp: 1 }).limit(100);
+            let history = [];
+            if (isDbConnected) {
+                let query = targetUser === 'public' 
+                    ? { recipient: 'public' }
+                    : { $or: [
+                        { sender: currentUser, recipient: targetUser },
+                        { sender: targetUser, recipient: currentUser }
+                      ]};
+                history = await Message.find(query).sort({ timestamp: 1 }).limit(100);
+            } else {
+                history = memoryMessages.filter(m => {
+                    if (targetUser === 'public') return m.recipient === 'public';
+                    return (m.sender === currentUser && m.recipient === targetUser) ||
+                           (m.sender === targetUser && m.recipient === currentUser);
+                });
+            }
             socket.emit('chatHistory', history);
-        } catch (e) {
-            console.log('Error loading history:', e);
-        }
+        } catch (e) { console.log(e); }
     });
 
-    // Send Message (Public or Private)
+    // SEND MESSAGE
     socket.on('sendMessage', async (data) => {
         try {
             const { sender, recipient, type, content, time } = data;
-            const newMsg = new Message({ sender, recipient, type, content, time });
-            await newMsg.save();
+            const newMsg = { sender, recipient, type, content, time, timestamp: new Date() };
+
+            if (isDbConnected) {
+                const dbMsg = new Message(newMsg);
+                await dbMsg.save();
+            } else {
+                memoryMessages.push(newMsg);
+            }
 
             if (recipient === 'public') {
                 io.emit('receiveMessage', newMsg);
             } else {
-                // Send to recipient and sender
                 io.to(recipient).emit('receiveMessage', newMsg);
                 io.to(sender).emit('receiveMessage', newMsg);
             }
-        } catch (e) {
-            console.log('Error saving message:', e);
-        }
+        } catch (e) { console.log(e); }
     });
 
-    // Friend Request Handling
+    // FRIEND SYSTEM
     socket.on('sendFriendRequest', async ({ sender, recipient }) => {
         try {
-            let target = await User.findOne({ username: recipient });
-            if (target && !target.requests.includes(sender) && !target.friends.includes(sender)) {
-                target.requests.push(sender);
-                await target.save();
-                io.to(recipient).emit('friendRequestReceived', { sender });
+            if (isDbConnected) {
+                let target = await User.findOne({ username: recipient });
+                if (target && !target.requests.includes(sender) && !target.friends.includes(sender)) {
+                    target.requests.push(sender);
+                    await target.save();
+                    io.to(recipient).emit('friendRequestReceived', { sender });
+                }
             }
         } catch (e) { console.log(e); }
     });
 
     socket.on('acceptFriendRequest', async ({ currentUser, friendName }) => {
         try {
-            let user = await User.findOne({ username: currentUser });
-            let friend = await User.findOne({ username: friendName });
-
-            if (user && friend) {
-                user.requests = user.requests.filter(r => r !== friendName);
-                if (!user.friends.includes(friendName)) user.friends.push(friendName);
-                if (!friend.friends.includes(currentUser)) friend.friends.push(currentUser);
-
-                await user.save();
-                await friend.save();
-
-                sendUserData(socket, currentUser);
-                // Also update friend if online
-                const friendSocketId = Object.keys(onlineUsers).find(key => onlineUsers[key] === friendName);
-                if (friendSocketId) {
-                    const fSocket = io.sockets.sockets.get(friendSocketId);
-                    if (fSocket) sendUserData(fSocket, friendName);
+            if (isDbConnected) {
+                let user = await User.findOne({ username: currentUser });
+                let friend = await User.findOne({ username: friendName });
+                if (user && friend) {
+                    user.requests = user.requests.filter(r => r !== friendName);
+                    if (!user.friends.includes(friendName)) user.friends.push(friendName);
+                    if (!friend.friends.includes(currentUser)) friend.friends.push(currentUser);
+                    await user.save();
+                    await friend.save();
+                    sendUserData(socket, currentUser);
                 }
             }
         } catch (e) { console.log(e); }
@@ -146,15 +177,16 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         delete onlineUsers[socket.id];
         broadcastOnlineUsers();
-        console.log('🔌 User disconnected:', socket.id);
     });
 });
 
 async function sendUserData(socket, username) {
     try {
-        let user = await User.findOne({ username });
-        if (user) {
-            socket.emit('userData', { friends: user.friends, requests: user.requests });
+        if (isDbConnected) {
+            let user = await User.findOne({ username });
+            if (user) socket.emit('userData', { friends: user.friends, requests: user.requests });
+        } else {
+            socket.emit('userData', { friends: [], requests: [] });
         }
     } catch (e) { console.log(e); }
 }
